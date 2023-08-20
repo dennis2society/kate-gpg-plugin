@@ -31,9 +31,7 @@ target_sources(
   GPGKeyDetails.cpp
   GPGMeWrapper.hpp
   GPGMeWrapper.cpp
-  README.md
   kate_gpg_plugin.json
-  kate_gpg_plugin_screenshot.jpg
 )
 
 add_compile_options(-Wall -Wextra -Wpedantic)

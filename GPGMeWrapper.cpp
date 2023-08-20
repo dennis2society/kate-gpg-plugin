@@ -181,6 +181,15 @@ GPGMeWrapper::encryptString(const QString &inputString_,
   GpgME::Context::EncryptionFlags flags = GpgME::Context::EncryptionFlags::AlwaysTrust;
   if (symmetricEncryption_) {
     flags = GpgME::Context::EncryptionFlags::Symmetric;
+    err = ctx->encryptSymmetrically(plainTextData, ciphertext);
+    if (!err) {
+      result.decryptionSuccess = true;
+      result.resultString = QString::fromStdString(ciphertext.toString());
+      return result;
+    } else {
+      result.resultString.append("ERROR in syymetric encryption: " + QString(err.asString()));
+      return result;
+    }
   }
   GpgME::EncryptionResult enRes =
       ctx->encrypt(selectedKeys, plainTextData, ciphertext, flags);

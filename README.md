@@ -50,8 +50,8 @@ Ctrl+Z works after encryption.
   6. Enable the GPG plugin in Kate -> Settings -> Preferences -> Configure Kate -> Plugins
      A new vertical button should appear in the left sidebar.
       
-The first line creates a ```./build/``` directory and optiadds a parameter 
-to create a prefix.sh which can add a temporary Kate plugin path. 
+The first line creates a ```./build/``` directory and adds a parameter
+to create a prefix.sh which can add a temporary Kate plugin path to your shell.
 It enables a release build, too.
 
 The second line builds the project in the previously set directory.
