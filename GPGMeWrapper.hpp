@@ -43,6 +43,14 @@ private:
   uint m_selectedKeyIndex;
 
   /**
+   * @brief Gets all available GPG keys containing mail addresses
+   *        with search pattern.
+   * @param searchPattern_ The mail search pattern.
+   * @return A list of matching GpgMe::Key
+   */
+  std::vector<GpgME::Key> listKeys(const QString &searchPattern_ = "");
+
+  /**
    * @brief This function reads all available keys and
    *        adds its details to the keys list.
    */
@@ -57,7 +65,6 @@ public:
 
   size_t getNumKeys() const;
 
-  std::vector<GpgME::Key> listKeys(const QString &searchPattern_ = "");
 
   const GPGOperationResult decryptString(const QString &inputString_,
                                          const QString &fingerprint_);
