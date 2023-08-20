@@ -1,0 +1,8 @@
+ {
+    "KPlugin": {
+        "Description": "Decrypts from and encrypts to .gpg and .asc files",
+        "Description[x-test]": "xxDecrypts from and encrypts to .gpg and .asc filesxx",
+        "Name": "GPG Plugin",
+        "Name[x-test]": "xxGPG Pluginxx"
+    }
+}
