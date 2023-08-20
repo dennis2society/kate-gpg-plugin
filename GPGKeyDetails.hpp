@@ -23,7 +23,6 @@
 
 #include <QString>
 #include <QVector>
-#include <gpgme.h>
 #include <gpgme++/key.h>
 
 class GPGKeyDetails {

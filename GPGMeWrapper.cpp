@@ -25,11 +25,10 @@
 #include <vector>
 
 /// local functions
-QVector<QString> getUIDsForKey(gpgme_key_t key) {
+QVector<QString> getUIDsForKey(GpgME::Key key) {
   QVector<QString> result;
-  gpgme_user_id_t uid;
-  for (uid = key->uids; uid; uid = uid->next) {
-    result.append(QString(uid->name));
+  for (auto uid = key.userIDs().begin(); uid != key.userIDs().end(); ++uid) {
+    result.append(QString(uid->name()));
   }
   return result;
 }
