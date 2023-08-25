@@ -27,7 +27,6 @@
 /// local functions
 QVector<QString> getUIDsForKey(GpgME::Key key) {
   QVector<QString> result;
-  //for (auto uid = key.userIDs().begin(); uid != key.userIDs().end(); ++uid) {
   for (auto &uid : key.userIDs()) {
     result.append(QString(uid.name()));
   }
