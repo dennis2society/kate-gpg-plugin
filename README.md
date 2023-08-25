@@ -46,7 +46,7 @@ save a currently decrypted file as plain text, leaving it unecrypted.
   3. ```(sudo) cmake --install build/```
      (sudo is only necessary for a global install (if you went with option 1.b ))
   4. (optional depending on 1.a) ```source build/prefix.sh```
-  5. Run kate form the current terminal prompt
+  5. Run kate from the current terminal prompt
   6. Enable the GPG plugin in Kate -> Settings -> Preferences -> Configure Kate -> Plugins
      A new vertical button should appear in the left sidebar.
       
