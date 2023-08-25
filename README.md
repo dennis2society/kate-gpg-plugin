@@ -8,7 +8,7 @@ in KDE's text editor KATE.
 
 ## Features
 + Plugin shows all available GPG keys with basic name filtering
-  (auto-selects your most recent own key by default)
+  (auto-selects the most recently created key)
 + Manual selection of key used for encryption
 + Symmetric encryption possible
 
@@ -16,17 +16,17 @@ in KDE's text editor KATE.
 + Qt development libraries are installed
 + A CMAKE & C++ build environment is installed
 + C/C++ bindings for GPGMe are installed
++ At least one public+private GPG key pair (if you want to encrypt to yourself)
 
 ## Caution!
 While this plugin makes it easy to decrypt/encrypt text, it also makes it easy to
-wrongly encrypt a file, e.g. with a key that is not yours or to accidentally save a
-currently decrypted file as plain text, leaving it unecrypted.
+do things wrong! You could accidentally encrypt a file, e.g. with a key 
+that is not yours or to accidentally save a currently decrypted file as plain 
+text, leaving it unecrypted.
 
-Use with care!
-
-Think twice before pressing Ctrl+S!
-
-Ctrl+Z works after encryption.
++ Use with care!
++ Think twice before pressing Ctrl+S!
++ Ctrl+Z works after encryption.
 
 ## Build Instructions
 + Clone the git repository
@@ -44,7 +44,7 @@ Ctrl+Z works after encryption.
      
   2. ```cmake --build build/```
   3. ```(sudo) cmake --install build/```
-     (sudo is only necessary for a global install)
+     (sudo is only necessary for a global install (if you went with option 1.b ))
   4. (optional depending on 1.a) ```source build/prefix.sh```
   5. Run kate form the current terminal prompt
   6. Enable the GPG plugin in Kate -> Settings -> Preferences -> Configure Kate -> Plugins
