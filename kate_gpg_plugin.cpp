@@ -80,18 +80,15 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 
   m_preferredEmailAddressComboBox = new QComboBox();
 
-  m_preferredKeyIDEdit = new QLineEdit(m_preferredGPGKeyID);
-  m_preferredKeyIDEdit->setEnabled(false);
+  m_selectedKeyIndexEdit = new QLineEdit(m_preferredGPGKeyID);
+  m_selectedKeyIndexEdit->setReadOnly(true);
   m_preferredEmailAddressComboBox->setToolTip(
       "Select an email address to which to encrypt.\n"
       "Only mail addresses associated with your currently selected\n"
       "key fingerprint are available.");
-  m_preferredKeyIDEdit->setToolTip(
+  m_selectedKeyIndexEdit->setToolTip(
       "This is your currently selected GPG key fingerprint that will be used "
       "for encryption.");
-
-  m_filterKeysCheckbox = new QCheckBox("Filter keys by search string");
-  m_filterKeysCheckbox->setChecked(true);
 
   m_saveAsASCIICheckbox = new QCheckBox("Save as ASCII encoded (.asc/.gpg)");
   m_saveAsASCIICheckbox->setChecked(true);
@@ -124,11 +121,10 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   m_verticalLayout->addWidget(m_symmetricEncryptioCheckbox);
   m_verticalLayout->addWidget(m_preferredEmailAddressLabel);
   m_verticalLayout->addWidget(m_preferredEmailLineEdit);
-  m_verticalLayout->addWidget(m_filterKeysCheckbox);
   m_verticalLayout->addWidget(m_EmailAddressSelectLabel);
   m_verticalLayout->addWidget(m_preferredEmailAddressComboBox);
   m_verticalLayout->addWidget(m_preferredGPGKeyIDLabel);
-  m_verticalLayout->addWidget(m_preferredKeyIDEdit);
+  m_verticalLayout->addWidget(m_selectedKeyIndexEdit);
   m_verticalLayout->addWidget(m_gpgKeyTable);
 
   m_debugTextBox = new QTextBrowser(m_toolview.get());
@@ -139,8 +135,6 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 
   connect(m_gpgKeyTable, SIGNAL(itemSelectionChanged()), this,
           SLOT(onTableViewSelection()));
-  connect(m_filterKeysCheckbox, SIGNAL(stateChanged(int)), this,
-          SLOT(onShowOnlyOwnMailsCheckboxChanged(int)));
   connect(m_preferredEmailLineEdit, SIGNAL(textChanged(QString)), this,
           SLOT(onPreferredEmailAddressChanged(QString)));
   connect(m_gpgDecryptButton, SIGNAL(released()), this,
@@ -161,13 +155,9 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 //  }
 //}
 
-void KateGPGPluginView::onShowOnlyOwnMailsCheckboxChanged(int i_) {
-  updateKeyTable();
-}
-
 void KateGPGPluginView::onPreferredEmailAddressChanged(QString s_) {
   m_preferredEmailAddress = m_preferredEmailLineEdit->text();
-  onShowOnlyOwnMailsCheckboxChanged(0);
+  updateKeyTable();
 }
 
 void KateGPGPluginView::decryptButtonPressed() {
@@ -184,12 +174,12 @@ void KateGPGPluginView::decryptButtonPressed() {
     return;
   }
   debugOutput("Encrypted String:\n" + v->document()->text(), "");
-  if (m_preferredKeyIDEdit->text().isEmpty()) {
+  if (m_selectedKeyIndexEdit->text().isEmpty()) {
     debugOutput("", "ERROR decrypting text! No fingerprint selected!");
     return;
   }
   GPGOperationResult res = m_gpgWrapper->decryptString(
-      v->document()->text(), m_preferredKeyIDEdit->text());
+      v->document()->text(), m_selectedKeyIndexEdit->text());
   if (!res.keyFound) {
     debugOutput("",
                 "Error decrypting text! No matching fingerprint found...\n" +
@@ -222,13 +212,13 @@ void KateGPGPluginView::encryptButtonPressed() {
     debugOutput("", "ERROR encrypting text! No text in current document!");
     return;
   }
-  if (m_preferredKeyIDEdit->text().isEmpty()) {
+  if (m_selectedKeyIndexEdit->text().isEmpty()) {
     debugOutput("", "ERROR encrypting text! No fingerprint selected!");
     return;
   }
 
   GPGOperationResult res = m_gpgWrapper->encryptString(
-      v->document()->text(), m_preferredKeyIDEdit->text(),
+      v->document()->text(), m_selectedKeyIndexEdit->text(),
       m_preferredEmailAddressComboBox->itemText(
           m_preferredEmailAddressComboBox->currentIndex()),
       m_symmetricEncryptioCheckbox->isChecked());
@@ -254,6 +244,7 @@ void KateGPGPluginView::onTableViewSelection() {
    * list of available GPG keys.
    */
   m_preferredEmailAddressComboBox->clear();
+  m_gpgWrapper->loadKeys(m_preferredEmailLineEdit->text());
   QModelIndexList selectedList =
       m_gpgKeyTable->selectionModel()->selectedRows();
   // Currently it is possible to select multiple rows in the QTableWidget.
@@ -275,7 +266,7 @@ void KateGPGPluginView::onTableViewSelection() {
             QString mail = d.mailAdresses().at(r);
             m_preferredEmailAddressComboBox->addItem(mail);
           }
-          m_preferredKeyIDEdit->setText(d.fingerPrint());
+          m_selectedKeyIndexEdit->setText(d.fingerPrint());
           return;
         }
       }
@@ -315,25 +306,15 @@ void KateGPGPluginView::updateKeyTable() {
   uint numRows = 0;
   for (auto row = 0; row < m_gpgWrapper->getNumKeys(); ++row) {
     GPGKeyDetails d = keyDetailsList.at(row);
-    bool showKey = false;
-    if ((m_filterKeysCheckbox->isChecked()) &&
-        (m_gpgWrapper->isPreferredKey(d, m_preferredEmailAddress))) {
-      showKey = true;
-    }
-    if (!m_filterKeysCheckbox->isChecked()) {
-      showKey = true;
-    }
-    if (showKey) {
-      m_gpgKeyTable->insertRow(m_gpgKeyTable->rowCount());
-      makeTableCell(d.fingerPrint(), numRows, 0);
-      makeTableCell(d.creationDate(), numRows, 1);
-      makeTableCell(d.expiryDate(), numRows, 2);
-      makeTableCell(d.keyLength(), numRows, 3);
-      QString uidsAndMails(
-          concatenateEmailAddressesToString(d.uids(), d.mailAdresses()));
-      makeTableCell(uidsAndMails, numRows, 4);
-      ++numRows;
-    }
+    m_gpgKeyTable->insertRow(m_gpgKeyTable->rowCount());
+    makeTableCell(d.fingerPrint(), numRows, 0);
+    makeTableCell(d.creationDate(), numRows, 1);
+    makeTableCell(d.expiryDate(), numRows, 2);
+    makeTableCell(d.keyLength(), numRows, 3);
+    QString uidsAndMails(
+      concatenateEmailAddressesToString(d.uids(), d.mailAdresses()));
+    makeTableCell(uidsAndMails, numRows, 4);
+    ++numRows;
   }
   m_gpgKeyTable->resizeRowsToContents();
   m_gpgKeyTable->setSelectionMode(QAbstractItemView::ContiguousSelection);

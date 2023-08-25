@@ -59,7 +59,6 @@ public slots:
   void setPreferredEmailAddress();  // use your own email address if you want to
                                     // encrypt to yourself
   void onTableViewSelection();    // listen to changes in the GPG key list table
-  void onShowOnlyOwnMailsCheckboxChanged(int i_);
   void onPreferredEmailAddressChanged(QString s_);
   void decryptButtonPressed();
   void encryptButtonPressed();
@@ -89,8 +88,7 @@ private:
   QString m_preferredGPGKeyID;
   QLabel *m_EmailAddressSelectLabel;
   QComboBox *m_preferredEmailAddressComboBox;
-  QLineEdit *m_preferredKeyIDEdit;
-  QCheckBox *m_filterKeysCheckbox;
+  QLineEdit *m_selectedKeyIndexEdit;
   QCheckBox *m_saveAsASCIICheckbox;
   QCheckBox *m_symmetricEncryptioCheckbox;
   QTableWidget *m_gpgKeyTable;

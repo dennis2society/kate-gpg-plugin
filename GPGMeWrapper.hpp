@@ -50,12 +50,6 @@ private:
    */
   std::vector<GpgME::Key> listKeys(const QString &searchPattern_ = "");
 
-  /**
-   * @brief This function reads all available keys and
-   *        adds its details to the keys list.
-   */
-  void loadKeys(const QString searchPattern_);
-
 public:
   GPGMeWrapper();
 
@@ -65,7 +59,22 @@ public:
 
   size_t getNumKeys() const;
 
+  /**
+   * @brief This function reads all available keys and
+   *        adds its details to the keys list.
+   */
+  void loadKeys(const QString searchPattern_);
 
+  /**
+   * @brief This function attempts to decrypt a given input string
+   *        using any of the available private keys. Will fail if the
+   *        message was not encrypted to your private key.
+   * @param inputString_ The encrypted input string.
+   * @param fingerprint_ This is used for planning ahead when attempting
+   *                     to decrypt a message encrypted to multiple
+   *                     recipients.
+   * @return The GPGOerationsResult (see above)
+   */
   const GPGOperationResult decryptString(const QString &inputString_,
                                          const QString &fingerprint_);
 
