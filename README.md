@@ -19,10 +19,10 @@ in KDE's text editor KATE.
 + At least one public+private GPG key pair (if you want to encrypt to yourself)
 
 ## Caution!
-While this plugin makes it easy to decrypt/encrypt text, it also makes it easy to
-do things wrong! You could accidentally encrypt a file, e.g. with a key 
-that is not yours or to accidentally save a currently decrypted file as plain 
-text, leaving it unecrypted.
+While this plugin makes it easy to decrypt+encrypt text, it also makes it easy to
+mess things up! You could accidentally encrypt a file, e.g. with a key 
+that is not yours, which then you wouldn't be able to decrypt. Or ou could accidentally 
+save a currently decrypted file as plain text, leaving it unecrypted.
 
 + Use with care!
 + Think twice before pressing Ctrl+S!
