@@ -34,7 +34,7 @@ target_sources(
   kate_gpg_plugin.json
 )
 
-add_compile_options(-Wall -Wextra -Wpedantic)
+add_compile_options(-O3 -Wall -Wextra -Wpedantic)
 
 # This makes the plugin translatable
 target_compile_definitions(kate_gpg_plugin PRIVATE TRANSLATION_DOMAIN="kate_gpg_plugin")
@@ -42,7 +42,6 @@ target_compile_definitions(kate_gpg_plugin PRIVATE TRANSLATION_DOMAIN="kate_gpg_
 target_link_libraries(kate_gpg_plugin
     PRIVATE
     KF5::CoreAddons KF5::I18n KF5::TextEditor
-    gpgme
     gpgmepp
 )
 

@@ -145,6 +145,12 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   updateKeyTable();
 }
 
+/// This is a left-over of the example project that creates a
+/// Markdown preview.
+/// I will leavie it here to remember where I have taken the
+/// basic plugin structure from:
+/// https://develop.kde.org/docs/apps/kate/plugin/
+///
 // void KateGPGPluginView::onViewChanged(KTextEditor::View *v) {
 //   if (!v || !v->document()) {
 //     return;
