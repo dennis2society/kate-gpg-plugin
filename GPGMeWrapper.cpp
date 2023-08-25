@@ -27,8 +27,9 @@
 /// local functions
 QVector<QString> getUIDsForKey(GpgME::Key key) {
   QVector<QString> result;
-  for (auto uid = key.userIDs().begin(); uid != key.userIDs().end(); ++uid) {
-    result.append(QString(uid->name()));
+  //for (auto uid = key.userIDs().begin(); uid != key.userIDs().end(); ++uid) {
+  for (auto &uid : key.userIDs()) {
+    result.append(QString(uid.name()));
   }
   return result;
 }
@@ -89,9 +90,8 @@ size_t GPGMeWrapper::getNumKeys() const { return m_keys.size(); }
 
 bool GPGMeWrapper::isPreferredKey(const GPGKeyDetails d_,
                                   const QString &mailAddress_) {
-  for (auto it = d_.mailAdresses().begin(); it != d_.mailAdresses().end();
-       ++it) {
-    if (it->contains(mailAddress_)) {
+  for (auto &it : d_.mailAdresses()) {
+    if (it.contains(mailAddress_)) {
       return true;
     }
   }
@@ -141,21 +141,19 @@ GPGMeWrapper::decryptString(const QString &inputString_,
   return result;
 }
 
-const GPGOperationResult
-GPGMeWrapper::encryptString(const QString &inputString_,
-                            const QString &fingerprint_,
-                            const QString &recipientMail_,
-                            bool symmetricEncryption_) {
+const GPGOperationResult GPGMeWrapper::encryptString(
+    const QString &inputString_, const QString &fingerprint_,
+    const QString &recipientMail_, bool symmetricEncryption_) {
   GPGOperationResult result;
 
   std::vector<GpgME::Key> selectedKeys;
   std::vector<GpgME::Key> keys = listKeys(recipientMail_);
   // find first key for selected fingerprint and mail address
-  for (auto key = keys.begin(); key != keys.end(); ++key) {
-    const QString fingerprint = QString(key->primaryFingerprint());
+  for (auto &key : keys) {
+    const QString fingerprint = QString(key.primaryFingerprint());
     if (fingerprint == fingerprint_) {
       result.keyFound = true;
-      selectedKeys.push_back(*key);
+      selectedKeys.push_back(key);
       break;
     }
   }
@@ -177,16 +175,17 @@ GPGMeWrapper::encryptString(const QString &inputString_,
   // encrypt
   // Using EncryptionFlags::NoEncryptTo returns a NotImplemented error... so we
   // have to use AlwaysTrust :/
-  GpgME::Context::EncryptionFlags flags = GpgME::Context::EncryptionFlags::AlwaysTrust;
+  GpgME::Context::EncryptionFlags flags =
+      GpgME::Context::EncryptionFlags::AlwaysTrust;
   if (symmetricEncryption_) {
-    flags = GpgME::Context::EncryptionFlags::Symmetric;
     err = ctx->encryptSymmetrically(plainTextData, ciphertext);
     if (!err) {
       result.decryptionSuccess = true;
       result.resultString = QString::fromStdString(ciphertext.toString());
       return result;
     } else {
-      result.resultString.append("ERROR in syymetric encryption: " + QString(err.asString()));
+      result.resultString.append("ERROR in syymetric encryption: " +
+                                 QString(err.asString()));
       return result;
     }
   }
