@@ -53,14 +53,14 @@ This line should do it for most recent Ubuntu based distributions:<br />
   <li>Clone the git repository</li>
   <li>Run CMake in the cloned folder (if it exists delete the <code>build/</code> folder first just to be sure):</li>
   <li>
-    `cmake -B build/ -D CMAKE_BUILD_TYPE=Release`
+    <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release</code>
+  </li>
   <li>
-  <li>
-    `cmake --build build/`
+    <code>cmake --build build/</code>
   </li>
   <li>
     Symlink/Copy the plugin to the Kate plugin path. This requires sudo!<br />
-    In my Ubuntu VM symlinking the plugin did not work. Plugin doesn't show up unless copied...<br />
+    In my Ubuntu VM symlinking the plugin did not work. Plugin doesn't show up in Kate unless copied...<br />
     Hint: You can use the CMAKE_INSTALL_PREFIX and then source the build/prefix.sh to add
     a custom non-root Kate plugin path.<br />
     <ul>
@@ -68,10 +68,7 @@ This line should do it for most recent Ubuntu based distributions:<br />
         <b>Manjaro:</b><br /><code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code>
       </li>
       <li>
-        <b>(K)Ubuntu:</b><br />
-          <code>
-            sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/
-          </code>
+        <b>(K)Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code>
       </li>
     </ul>
   </li>
