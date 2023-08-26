@@ -75,8 +75,8 @@ This line should do it for most recent Ubuntu based distributions:<br />
     </ul>
   </li>
   <li>Run kate (from the current terminal prompt)</li>
-  <li>Enable the GPG plugin in Kate &rarr; Settings &rarr; Preferences &rarr; Configure Kate &rarr; Plugins
-    A new vertical button should appear in the left sidebar.
+  <li>Enable the GPG plugin in Kate &rarr; Settings &rarr; Preferences &rarr; Configure Kate &rarr; Plugins.<br />
+    A new vertical button should appear in the left sidebar.<br />
   </li>
 </ul>
 
