@@ -65,10 +65,7 @@ This line should do it for most recent Ubuntu based distributions:<br />
     a custom non-root Kate plugin path.<br />
     <ul>
       <li>
-        <b>Manjaro:</b><br />
-        <code>
-          sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/
-        </code>
+        <b>Manjaro:</b><br /><code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code>
       </li>
       <li>
         <b>(K)Ubuntu:</b><br />
