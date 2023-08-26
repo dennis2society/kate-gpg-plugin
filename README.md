@@ -46,9 +46,7 @@ packages manually:
 </ul>
 This line should do it for most recent Ubuntu based distributions:
 
-<code>
-  sudo apt install git cmake extra-cmake-modules cmake-extras g++ kate libgpgmepp-dev libgcrypt20-dev libgpg-error-dev libecm1-dev
-</code>
+<code>sudo apt install git cmake extra-cmake-modules cmake-extras g++ kate libgpgmepp-dev libgcrypt20-dev libgpg-error-dev libecm1-dev</code>
 
 ### Build ###
 <ul>
@@ -60,26 +58,22 @@ This line should do it for most recent Ubuntu based distributions:
     </code>
   <li>
   <li>
-    <code>
-      cmake --build build/
-    </code>
+    <code>cmake --build build/</code>
   </li>
   <li>
-    This will symlink the plugin to the Kate plugin path. This requires sudo.<br />
+    Copy the plugin to the Kate plugin path. This requires sudo.<br />
+    In my Ubuntu VM symlinking the plugin did not work. I had to copy the binry...
     Hint: You can use the CMAKE_INSTALL_PREFIX and then source the build/prefix.sh to add
-    a custom non-root Kate plugin path:  [See here](https://develop.kde.org/docs/apps/kate/plugin/)
+    a custom non-root Kate plugin path:  [See here](https://develop.kde.org/docs/apps/kate/plugin/)<br />
+    I have tried hard to get this working, but the plugin path on Ubuntu was always broken... :/
     <ul>
       <li>
         <b>Manjaro:</b><br />
-        <code>
-          sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/
-        <code>
+        <code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/<code>
       </li>
       <li>
-        <b>(K)Ubuntu</b><br />
-        <code>
-          sudo ln -s build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/
-        </code>
+        <b>(K)Ubuntu:</b><br />
+        <code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code>
       </li>
     </ul>
   </li>
@@ -87,23 +81,6 @@ This line should do it for most recent Ubuntu based distributions:
   <li>Enable the GPG plugin in Kate -> Settings -> Preferences -> Configure Kate -> Plugins
     A new vertical button should appear in the left sidebar.
   </li>
-</ul>
-      
-The first line creates a ```./build/``` directory and adds a parameter
-to create a prefix.sh which can add a temporary Kate plugin path to your shell.
-It enables a release build, too.
-
-The second line builds the project in the previously set directory.
-
-The third line "installs" the build plugin to depending on your choice in point 1. Temporary local
-plugin path is ```~/kde/usr/lib/plugins/ktexteditor/```.
-For testing purposes I have sym-linked the library to an approriate folder. Worked fine for me.
-Default plugin path (on Manjaro with KDE Plasma) is ```/usr/lib/qt/plugins/ktexteditor```.
-
-The fourth line "sources" the previously generated prefix.sh to set your 
-temporary Kate plugin path so that it finds the newly built one.
-
-Run kate from the terminal in which you have sourced the prefix.sh and enable the plugin in the Kate settings.
 </ul>
 ## TODO
 
