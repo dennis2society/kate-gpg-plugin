@@ -53,9 +53,7 @@ This line should do it for most recent Ubuntu based distributions:
   <li>Clone the git repository</li>
   <li>Run CMake in the cloned folder (if it exists delete the <code>build/</code> folder first just to be sure):</li>
   <li>
-    <code>
-      cmake -B build/ -D CMAKE_BUILD_TYPE=Release
-    </code>
+    <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release</code>
   <li>
   <li>
     <code>cmake --build build/</code>
@@ -68,11 +66,11 @@ This line should do it for most recent Ubuntu based distributions:
     I have tried hard to get this working, but the plugin path on Ubuntu was always broken... :/
     <ul>
       <li>
-        <b>Manjaro:</b><br />
+        <b>Manjaro:</b>
         <code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/<code>
       </li>
       <li>
-        <b>(K)Ubuntu:</b><br />
+        <b>(K)Ubuntu:</b>
         <code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code>
       </li>
     </ul>
