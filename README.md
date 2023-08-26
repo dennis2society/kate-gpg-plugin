@@ -29,6 +29,8 @@ save a currently decrypted file as plain text, leaving it unecrypted.
 + Ctrl+Z works after encryption and saving.
 
 ## Build Instructions
+
+### Dependencies
 This plugin was developed and built on Manjaro Linux running KDE Plasma. I have
 tested the build in a fresh (K)Ubuntu 22.04.3 LTS VM and had to install at least these
 packages manually:
@@ -73,7 +75,7 @@ This line should do it for most recent Ubuntu based distributions:<br />
     </ul>
   </li>
   <li>Run kate (from the current terminal prompt)</li>
-  <li>Enable the GPG plugin in Kate -> Settings -> Preferences -> Configure Kate -> Plugins
+  <li>Enable the GPG plugin in Kate &rarr; Settings &rarr; Preferences &rarr; Configure Kate &rarr; Plugins
     A new vertical button should appear in the left sidebar.
   </li>
 </ul>
