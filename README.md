@@ -29,7 +29,7 @@ save a currently decrypted file as plain text, leaving it unecrypted.
 + Ctrl+Z works after encryption and saving.
 
 ## Build Instructions
-This plugin was developed and built on a recent Manjaro Linux running KDE Plasma. I have
+This plugin was developed and built on Manjaro Linux running KDE Plasma. I have
 tested the build in a fresh (K)Ubuntu 22.04.3 LTS VM and had to install at least these
 packages manually:
 <ul>
@@ -44,19 +44,19 @@ packages manually:
   <li>libgpg-error-dev</li>
   <li>libecm1-dev</li>
 </ul>
-This line should do it for most recent Ubuntu based distributions:
 
+This line should do it for most recent Ubuntu based distributions:<br />
 <code>sudo apt install git cmake extra-cmake-modules cmake-extras g++ kate libgpgmepp-dev libgcrypt20-dev libgpg-error-dev libecm1-dev</code>
 
-### Build ###
+### Build
 <ul>
   <li>Clone the git repository</li>
   <li>Run CMake in the cloned folder (if it exists delete the <code>build/</code> folder first just to be sure):</li>
   <li>
-    <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release</code>
+    `cmake -B build/ -D CMAKE_BUILD_TYPE=Release`
   <li>
   <li>
-    <code>cmake --build build/</code>
+    `cmake --build build/`
   </li>
   <li>
     Symlink/Copy the plugin to the Kate plugin path. This requires sudo!<br />
@@ -83,7 +83,8 @@ This line should do it for most recent Ubuntu based distributions:
     A new vertical button should appear in the left sidebar.
   </li>
 </ul>
-## TODO
+
+## TODO ##
 
 + Save/load current UI selections to/from disk
 + Fix that !#$%?X§ jumping UI bug
