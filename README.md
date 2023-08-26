@@ -21,34 +21,73 @@ in KDE's text editor KATE.
 ## Caution!
 While this plugin makes it easy to decrypt+encrypt text, it also makes it easy to
 mess things up! You could accidentally encrypt a file, e.g. with a key 
-that is not yours, which then you wouldn't be able to decrypt. Or ou could accidentally 
+that is not yours, which then you wouldn't be able to decrypt. Or you could accidentally
 save a currently decrypted file as plain text, leaving it unecrypted.
 
 + Use with care!
 + Think twice before pressing Ctrl+S!
-+ Ctrl+Z works after encryption.
++ Ctrl+Z works after encryption and saving.
 
 ## Build Instructions
-+ Clone the git repository
-+ In the cloned repo's folder run (if it exists delete the ```./build/```-folder first just to be sure):
-  1. 
-    a) With local installation prefix:
-    ```bash
-      cmake -B build/ -D CMAKE_INSTALL_PREFIX=$HOME/kde/usr -D CMAKE_BUILD_TYPE=Release
-    ```
-    
-    b) No prefix: (installation will use default KDE plugin path)
-    ```
+This plugin was developed and built on a recent Manjaro Linux running KDE Plasma. I have
+tested the build in a fresh (K)Ubuntu 22.04.3 LTS VM and had to install at least these
+packages manually:
+<ul>
+  <li>git</li>
+  <li>cmake</li>
+  <li>extra-cmake-modules</li>
+  <li>cmake-extras</li>
+  <li>g++</li>
+  <li>kate</li>
+  <li>libgpgmepp-dev (this should also install qmake and quite a few Qt dev libs)</li>
+  <li>libgcrypt20-dev</li>
+  <li>libgpg-error-dev</li>
+  <li>libecm1-dev</li>
+</ul>
+This line should do it for most recent Ubuntu based distributions:
+
+<code>
+  sudo apt install git cmake extra-cmake-modules cmake-extras g++ kate libgpgmepp-dev libgcrypt20-dev libgpg-error-dev libecm1-dev
+</code>
+
+### Build ###
+<ul>
+  <li>Clone the git repository</li>
+  <li>Run CMake in the cloned folder (if it exists delete the <code>build/</code> folder first just to be sure):</li>
+  <li>
+    <code>
       cmake -B build/ -D CMAKE_BUILD_TYPE=Release
-    ``` 
-     
-  2. ```cmake --build build/```
-  3. ```(sudo) cmake --install build/```
-     (sudo is only necessary for a global install (if you went with option 1.b ))
-  4. (optional depending on 1.a) ```source build/prefix.sh```
-  5. Run kate from the current terminal prompt
-  6. Enable the GPG plugin in Kate -> Settings -> Preferences -> Configure Kate -> Plugins
-     A new vertical button should appear in the left sidebar.
+    </code>
+  <li>
+  <li>
+    <code>
+      cmake --build build/
+    </code>
+  </li>
+  <li>
+    This will symlink the plugin to the Kate plugin path. This requires sudo.<br />
+    Hint: You can use the CMAKE_INSTALL_PREFIX and then source the build/prefix.sh to add
+    a custom non-root Kate plugin path:  [See here](https://develop.kde.org/docs/apps/kate/plugin/)
+    <ul>
+      <li>
+        <b>Manjaro:</b><br />
+        <code>
+          sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/
+        <code>
+      </li>
+      <li>
+        <b>(K)Ubuntu</b><br />
+        <code>
+          sudo ln -s build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/
+        </code>
+      </li>
+    </ul>
+  </li>
+  <li>Run kate (from the current terminal prompt)</li>
+  <li>Enable the GPG plugin in Kate -> Settings -> Preferences -> Configure Kate -> Plugins
+    A new vertical button should appear in the left sidebar.
+  </li>
+</ul>
       
 The first line creates a ```./build/``` directory and adds a parameter
 to create a prefix.sh which can add a temporary Kate plugin path to your shell.
@@ -65,7 +104,7 @@ The fourth line "sources" the previously generated prefix.sh to set your
 temporary Kate plugin path so that it finds the newly built one.
 
 Run kate from the terminal in which you have sourced the prefix.sh and enable the plugin in the Kate settings.
-
+</ul>
 ## TODO
 
 + Save/load current UI selections to/from disk
