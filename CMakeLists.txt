@@ -32,6 +32,7 @@ target_sources(
   GPGMeWrapper.hpp
   GPGMeWrapper.cpp
   kate_gpg_plugin.json
+
 )
 
 add_compile_options(-O3 -Wall -Wextra -Wpedantic)

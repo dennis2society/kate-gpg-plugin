@@ -32,18 +32,6 @@ QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow) {
   return new KateGPGPluginView(this, mainWindow);
 }
 
-void KateGPGPluginView::debugOutput(const QString &debugMessage,
-                                    const QString &errorMessage) {
-  if (!debugMessage.isEmpty()) {
-    m_debugTextBox->setText(m_debugTextBox->toPlainText().prepend(
-        "DEBUG:\n\n" + debugMessage + "\n\n"));
-  }
-  if (!errorMessage.isEmpty()) {
-    m_debugTextBox->setText(m_debugTextBox->toPlainText().prepend(
-        "ERROR:\n\n" + errorMessage + "\n\n"));
-  }
-}
-
 KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
                                      KTextEditor::MainWindow *mainwindow)
     : m_mainWindow(mainwindow) {
@@ -53,9 +41,10 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
       "gpgPlugin",                   // just an identifier for the toolview
       KTextEditor::MainWindow::Left, // we want to create a toolview on the
                                      // left side
-      QIcon::fromTheme("preview"),
+      QIcon::fromTheme("security-medium"),
       i18n("GPG Plugin"))); // User visible name of the toolview, i18n means it
                             // will be available for translation
+  m_toolview->setMinimumHeight(700);
 
   // BUTTONS!
   m_gpgDecryptButton = new QPushButton("GPG DEcrypt current document");
@@ -67,16 +56,21 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 
   // Lots of initialization and setting parameters for Qt UI stuff
   m_verticalLayout = new QVBoxLayout();
+  //m_verticalLayout->setSizeConstraint(QLayout::SetMinimumSize);
   m_titleLabel = new QLabel("<b>Kate GPG Plugin Settings</b>");
+  m_titleLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
   m_preferredEmailAddress = QString("");
   m_preferredGPGKeyID = QString("Key ID");
   m_preferredEmailAddressLabel = new QLabel(
       "A search string used to filter keys by available email addresses");
+  m_preferredEmailAddressLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   m_preferredEmailLineEdit = new QLineEdit(m_preferredEmailAddress);
   m_preferredGPGKeyIDLabel =
       new QLabel("Selected GPG Key finerprint for encryption");
   m_EmailAddressSelectLabel =
       new QLabel("<b>To: Email address used for encryption</b>");
+  m_preferredGPGKeyIDLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+  m_EmailAddressSelectLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
 
   m_preferredEmailAddressComboBox = new QComboBox();
 
@@ -98,17 +92,14 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 
   m_gpgKeyTable = new QTableWidget(m_gpgWrapper->getNumKeys(), 5);
   m_gpgKeyTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-  m_selectedKeyIndexLabel =
-      new QLabel("Selected Key Index: " + QString::number(0) + "/" +
-                 QString::number(m_gpgWrapper->getNumKeys()));
-  m_selectedKeyIndexLabel->setSizePolicy(QSizePolicy::Minimum,
-                                         QSizePolicy::Minimum);
 
   // we want the settings stuff in QScrollArea
   QScrollArea *scrollArea = new QScrollArea();
   scrollArea->setWidgetResizable(true);
-  scrollArea->setMinimumHeight(1900);
+  scrollArea->setMinimumHeight(700);
   scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  //scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  scrollArea->setAlignment(Qt::AlignTop);
 
   QWidget *w = new QWidget();
   w->setLayout(m_verticalLayout);
@@ -127,11 +118,7 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   m_verticalLayout->addWidget(m_selectedKeyIndexEdit);
   m_verticalLayout->addWidget(m_gpgKeyTable);
 
-  m_debugTextBox = new QTextBrowser(m_toolview.get());
-  m_debugTextBox->setMinimumHeight(330);
-  // m_debugTextBox->setMaximumHeight(900);
-  m_debugTextBox->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  m_verticalLayout->addWidget(m_debugTextBox);
+  m_verticalLayout->insertStretch(-1, 1);
 
   connect(m_gpgKeyTable, SIGNAL(itemSelectionChanged()), this,
           SLOT(onTableViewSelection()));
@@ -169,57 +156,85 @@ void KateGPGPluginView::onPreferredEmailAddressChanged(QString s_) {
 void KateGPGPluginView::decryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    debugOutput("", "No available views...");
+    QMessageBox msg;
+    msg.setText("Error!");
+    msg.setInformativeText("No views available...");
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
-  debugOutput("NumViews: " + QString::number(views.size()), "");
   KTextEditor::View *v = views.at(0);
-  debugOutput("DecrypButton pressed!", "");
   if (!v || !v->document()) {
-    debugOutput("", "ERROR decrypting text! Document empty!");
+    QMessageBox msg;
+    msg.setText("Error Dycrypting Text!");
+    msg.setInformativeText("Document is empty...");
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
-  debugOutput("Encrypted String:\n" + v->document()->text(), "");
   if (m_selectedKeyIndexEdit->text().isEmpty()) {
-    debugOutput("", "ERROR decrypting text! No fingerprint selected!");
+    QMessageBox msg;
+    msg.setText("Error Decrypting Text!");
+    msg.setInformativeText("No fingerprint selected...");
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
   GPGOperationResult res = m_gpgWrapper->decryptString(
       v->document()->text(), m_selectedKeyIndexEdit->text());
   if (!res.keyFound) {
-    debugOutput("",
-                "Error decrypting text! No matching fingerprint found...\n" +
-                    res.resultString);
+    QMessageBox msg;
+    msg.setText("Error Decrypting Text!");
+    msg.setInformativeText("No matching fingerprint found...");
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
   if (!res.decryptionSuccess) {
-    debugOutput("", "Error decrypting text! Decryption failed... Errorcode: " +
-                        res.errorMessage);
+    QMessageBox msg;
+    msg.setText("Error Decrypting Text!");
+    msg.setInformativeText(res.errorMessage);
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
-  debugOutput("Decrypted text: " + res.resultString, "");
   v->document()->setText(res.resultString);
 }
 
 void KateGPGPluginView::encryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    debugOutput("", "No available views...");
+    QMessageBox msg;
+    msg.setText("Error!");
+    msg.setInformativeText("No views available...");
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
-  debugOutput("NumViews: " + QString::number(views.size()), "");
   KTextEditor::View *v = views.at(0);
 
   if (!v || !v->document()) {
-    debugOutput("", "ERROR encrypting text! Document empty!");
+    QMessageBox msg;
+    msg.setText("Error Encrypting Text!");
+    msg.setInformativeText("No document available...");
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
   if (v->document()->text().isEmpty()) {
-    debugOutput("", "ERROR encrypting text! No text in current document!");
+    QMessageBox msg;
+    msg.setText("Error Encrypting Text!");
+    msg.setInformativeText("Document is empty...");
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
   if (m_selectedKeyIndexEdit->text().isEmpty()) {
-    debugOutput("", "ERROR encrypting text! No fingerprint selected!");
+    QMessageBox msg;
+    msg.setText("Error Decrypting Text!");
+    msg.setInformativeText("No fingerprint selected...");
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
 
@@ -229,16 +244,21 @@ void KateGPGPluginView::encryptButtonPressed() {
           m_preferredEmailAddressComboBox->currentIndex()),
       m_symmetricEncryptioCheckbox->isChecked());
   if (!res.keyFound) {
-    debugOutput("",
-                "Error encrypting text! No matching fingerprint found...\n" +
-                    res.resultString);
+    QMessageBox msg;
+    msg.setText("Error Encrypting Text!");
+    msg.setInformativeText("No Matching Fingerprint found...\n"+res.errorMessage);
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
   if (!res.decryptionSuccess) {
-    debugOutput("", "Error encrypting text! Errorcode: " + res.errorMessage);
+    QMessageBox msg;
+    msg.setText("Error Encrypting Text!");
+    msg.setInformativeText(res.errorMessage);
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
     return;
   }
-  debugOutput("Encrypted text: " + res.resultString, "");
   v->document()->text();
   v->document()->setText(res.resultString);
 }
@@ -259,10 +279,8 @@ void KateGPGPluginView::onTableViewSelection() {
     m_selectedRowIndex = selectedList.at(0).row();
     const QString selectedFingerPrint(
         m_gpgKeyTable->item(m_selectedRowIndex, 0)->text());
-    debugOutput("Selected Row: " + QString::number(m_selectedRowIndex), "");
     const QVector<GPGKeyDetails> keys = m_gpgWrapper->getKeys();
     if (m_selectedRowIndex <= keys.size()) {
-      debugOutput("Selected Key Fingerprint: " + selectedFingerPrint, "");
       for (auto key = m_gpgWrapper->getKeys().begin();
            key != m_gpgWrapper->getKeys().end(); ++key) {
         GPGKeyDetails d = *key;
@@ -330,8 +348,9 @@ void KateGPGPluginView::updateKeyTable() {
   if (m_gpgKeyTable->rowCount() > 0) {
     m_gpgKeyTable->selectRow(0);
   }
-  m_gpgKeyTable->setMinimumHeight(100);
-  m_gpgKeyTable->setMaximumHeight(300);
+  m_gpgKeyTable->setMinimumHeight(250);
+  m_gpgKeyTable->setMaximumHeight(500);
+  m_gpgKeyTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   m_gpgKeyTable->resizeColumnsToContents();
   m_gpgKeyTable->resizeRowsToContents();
 }

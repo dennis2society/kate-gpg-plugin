@@ -72,9 +72,6 @@ private:
 
   int m_selectedRowIndex;
 
-  // A temporary textbox to display debug output
-  QTextBrowser *m_debugTextBox = nullptr;
-
   QPushButton *m_gpgDecryptButton = nullptr;
   QPushButton *m_gpgEncryptButton = nullptr;
 
@@ -93,7 +90,6 @@ private:
   QCheckBox *m_symmetricEncryptioCheckbox;
   QTableWidget *m_gpgKeyTable;
   QStringList m_gpgKeyTableHeader;
-  QLabel *m_selectedKeyIndexLabel;
 
   // private functions
   void updateKeyTable();
@@ -102,6 +98,4 @@ private:
   convertKeyDetailsToTableItem(const GPGKeyDetails &keyDetails_);
 
   void makeTableCell(const QString cellValue, uint row, uint col);
-
-  void debugOutput(const QString& debugMessage, const QString& errorMessage);
 };
