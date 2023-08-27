@@ -11,6 +11,7 @@ in KDE's text editor KATE.
   (auto-selects the most recently created key)
 + Manual selection of key used for encryption
 + Symmetric encryption possible
++ Current UI selection saved
 
 ## Prerequisites
 + Qt development libraries are installed
@@ -82,7 +83,6 @@ This line should do it for most recent Ubuntu based distributions:<br />
 
 ## TODO ##
 
-+ Save/load current UI selections to/from disk
 + Fix that !#$%?X§ jumping UI bug
 + Automatically retrieve key fingerprint/ID and mail address 
   from encrypted file to set as selected "To:" key and mail address

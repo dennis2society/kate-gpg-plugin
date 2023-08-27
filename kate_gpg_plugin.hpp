@@ -30,6 +30,7 @@
 #include <QTableWidget>
 #include <QTextBrowser>
 #include <QVBoxLayout>
+#include <QSettings>
 #include <memory>
 #include <GPGMeWrapper.hpp>
 
@@ -50,8 +51,9 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   Q_OBJECT
 
 public:
-  explicit KateGPGPluginView(KateGPGPlugin *plugin,
-                             KTextEditor::MainWindow *mainwindow);
+  explicit KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWindow *mainwindow);
+
+  ~KateGPGPluginView();
 
   void onViewChanged(KTextEditor::View *v);
 
@@ -67,6 +69,8 @@ private:
   KTextEditor::MainWindow *m_mainWindow = nullptr;
   // The top level toolview widget
   std::unique_ptr<QWidget> m_toolview;
+
+  const QString m_settingsName = QString("kate_gpg_plugin_settings");
 
   GPGMeWrapper *m_gpgWrapper = nullptr;
 
@@ -91,6 +95,8 @@ private:
   QTableWidget *m_gpgKeyTable;
   QStringList m_gpgKeyTableHeader;
 
+  QSettings* m_pluginSettings;
+
   // private functions
   void updateKeyTable();
 
@@ -98,4 +104,7 @@ private:
   convertKeyDetailsToTableItem(const GPGKeyDetails &keyDetails_);
 
   void makeTableCell(const QString cellValue, uint row, uint col);
+
+  void readPluginSettings();
+  void savePluginSettings();
 };

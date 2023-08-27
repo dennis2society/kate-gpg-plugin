@@ -32,6 +32,44 @@ QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow) {
   return new KateGPGPluginView(this, mainWindow);
 }
 
+KateGPGPluginView::~KateGPGPluginView()
+{
+  savePluginSettings();
+}
+
+void KateGPGPluginView::readPluginSettings()
+{
+  if (m_pluginSettings != nullptr) {
+      m_pluginSettings->beginGroup("default");
+      m_preferredEmailLineEdit->setText(m_pluginSettings->value("search_string").toString());
+      m_selectedRowIndex = m_pluginSettings->value("selected_key_index").toUInt();
+      if (m_gpgKeyTable->rowCount() > 0) {
+          m_gpgKeyTable->selectRow(m_selectedRowIndex);
+      }
+      uint comboIndex = m_pluginSettings->value("selected_mail_address_index").toUInt();
+      if (comboIndex <= m_preferredEmailAddressComboBox->count()) {
+        m_preferredEmailAddressComboBox->setCurrentIndex(
+            m_pluginSettings->value("selected_mail_address_index").toUInt());
+      }
+      m_saveAsASCIICheckbox->setChecked(m_pluginSettings->value("use_ASCII_armor").toBool());
+      m_symmetricEncryptioCheckbox->setChecked(m_pluginSettings->value("use_symmetric_encryption").toBool());
+      m_pluginSettings->endGroup();
+  }
+}
+
+void KateGPGPluginView::savePluginSettings() {
+  if (m_pluginSettings != nullptr) {
+      m_pluginSettings->beginGroup("default");
+      m_pluginSettings->setValue("search_string", m_preferredEmailLineEdit->text());
+      m_pluginSettings->setValue("selected_key_index", m_selectedRowIndex);
+      m_pluginSettings->setValue("selected_mail_address_index",
+                                 m_preferredEmailAddressComboBox->currentIndex());
+      m_pluginSettings->setValue("use_ASCII_armor", m_saveAsASCIICheckbox->isChecked());
+      m_pluginSettings->setValue("use_symmetric_encryption", m_symmetricEncryptioCheckbox->isChecked());
+      m_pluginSettings->endGroup();
+  }
+}
+
 KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
                                      KTextEditor::MainWindow *mainwindow)
     : m_mainWindow(mainwindow) {
@@ -56,7 +94,6 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 
   // Lots of initialization and setting parameters for Qt UI stuff
   m_verticalLayout = new QVBoxLayout();
-  //m_verticalLayout->setSizeConstraint(QLayout::SetMinimumSize);
   m_titleLabel = new QLabel("<b>Kate GPG Plugin Settings</b>");
   m_titleLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
   m_preferredEmailAddress = QString("");
@@ -98,7 +135,6 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   scrollArea->setWidgetResizable(true);
   scrollArea->setMinimumHeight(700);
   scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  //scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   scrollArea->setAlignment(Qt::AlignTop);
 
   QWidget *w = new QWidget();
@@ -130,6 +166,10 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
           SLOT(encryptButtonPressed()));
 
   updateKeyTable();
+
+  // restore plugin settings
+  m_pluginSettings = new QSettings(m_settingsName);
+  readPluginSettings();
 }
 
 /// This is a left-over of the example project that creates a
@@ -149,6 +189,7 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 //}
 
 void KateGPGPluginView::onPreferredEmailAddressChanged(QString s_) {
+  emit m_gpgKeyTable->itemSelectionChanged();
   m_preferredEmailAddress = m_preferredEmailLineEdit->text();
   updateKeyTable();
 }
