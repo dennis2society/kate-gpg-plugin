@@ -56,7 +56,7 @@ void GPGKeyDetails::loadFromGPGMeKey(GpgME::Key key_) {
   m_creationDate = QString(timestampToQString(key_.subkey(0).creationTime()));
   m_expiryDate = QString(timestampToQString(key_.subkey(0).expirationTime()));
   const std::vector<GpgME::UserID>& ids = key_.userIDs();
-  for (auto id : ids) {
+  for (auto &id : ids) {
       m_uids.push_back(id.name());
       m_mailAddresses.push_back(id.email());
   }

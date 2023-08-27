@@ -88,10 +88,6 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   m_gpgDecryptButton = new QPushButton("GPG DEcrypt current document");
   m_gpgEncryptButton = new QPushButton("GPG ENcrypt current document");
 
-  // Connect the view changed signal to our slot
-  // connect(m_mainWindow, &KTextEditor::MainWindow::viewChanged, this,
-  //          &KateGPGPluginView::onViewChanged);
-
   // Lots of initialization and setting parameters for Qt UI stuff
   m_verticalLayout = new QVBoxLayout();
   m_titleLabel = new QLabel("<b>Kate GPG Plugin Settings</b>");
@@ -172,71 +168,43 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   readPluginSettings();
 }
 
-/// This is a left-over of the example project that creates a
-/// Markdown preview.
-/// I will leavie it here to remember where I have taken the
-/// basic plugin structure from:
-/// https://develop.kde.org/docs/apps/kate/plugin/
-///
-// void KateGPGPluginView::onViewChanged(KTextEditor::View *v) {
-//   if (!v || !v->document()) {
-//     return;
-//   }
-
-//  if (v->document()->highlightingMode().toLower() == "markdown") {
-//    m_debugTextBox->setMarkdown(v->document()->text());
-//  }
-//}
-
 void KateGPGPluginView::onPreferredEmailAddressChanged(QString s_) {
   emit m_gpgKeyTable->itemSelectionChanged();
   m_preferredEmailAddress = m_preferredEmailLineEdit->text();
   updateKeyTable();
 }
 
+int pluginMessageBox(const QString title_, const QString msg_) {
+  QMessageBox mb;
+  mb.setText(title_);
+  mb.setInformativeText(msg_);
+  mb.setDefaultButton(QMessageBox::Ok);
+  return mb.exec();
+}
+
 void KateGPGPluginView::decryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    QMessageBox msg;
-    msg.setText("Error!");
-    msg.setInformativeText("No views available...");
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+      pluginMessageBox("Error!", "No views available...");
     return;
   }
   KTextEditor::View *v = views.at(0);
   if (!v || !v->document()) {
-    QMessageBox msg;
-    msg.setText("Error Dycrypting Text!");
-    msg.setInformativeText("Document is empty...");
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Decrypting Text!", "Document is empty..");
     return;
   }
   if (m_selectedKeyIndexEdit->text().isEmpty()) {
-    QMessageBox msg;
-    msg.setText("Error Decrypting Text!");
-    msg.setInformativeText("No fingerprint selected...");
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Decrypting Text!", "No fingerprint selected...");
     return;
   }
   GPGOperationResult res = m_gpgWrapper->decryptString(
       v->document()->text(), m_selectedKeyIndexEdit->text());
   if (!res.keyFound) {
-    QMessageBox msg;
-    msg.setText("Error Decrypting Text!");
-    msg.setInformativeText("No matching fingerprint found...");
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Decrypting Text!", "No matching fingerprint found...");
     return;
   }
   if (!res.decryptionSuccess) {
-    QMessageBox msg;
-    msg.setText("Error Decrypting Text!");
-    msg.setInformativeText(res.errorMessage);
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Decrypting Text!", res.errorMessage);
     return;
   }
   v->document()->setText(res.resultString);
@@ -245,37 +213,21 @@ void KateGPGPluginView::decryptButtonPressed() {
 void KateGPGPluginView::encryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    QMessageBox msg;
-    msg.setText("Error!");
-    msg.setInformativeText("No views available...");
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error!", "No views available...");
     return;
   }
   KTextEditor::View *v = views.at(0);
 
   if (!v || !v->document()) {
-    QMessageBox msg;
-    msg.setText("Error Encrypting Text!");
-    msg.setInformativeText("No document available...");
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Encrypting Text!", "No document available...");
     return;
   }
   if (v->document()->text().isEmpty()) {
-    QMessageBox msg;
-    msg.setText("Error Encrypting Text!");
-    msg.setInformativeText("Document is empty...");
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Encrypting Text!", "Document is empty..");
     return;
   }
   if (m_selectedKeyIndexEdit->text().isEmpty()) {
-    QMessageBox msg;
-    msg.setText("Error Decrypting Text!");
-    msg.setInformativeText("No fingerprint selected...");
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Encrypting Text!", "No fingerprint selected...");
     return;
   }
 
@@ -285,19 +237,11 @@ void KateGPGPluginView::encryptButtonPressed() {
           m_preferredEmailAddressComboBox->currentIndex()),
       m_symmetricEncryptioCheckbox->isChecked());
   if (!res.keyFound) {
-    QMessageBox msg;
-    msg.setText("Error Encrypting Text!");
-    msg.setInformativeText("No Matching Fingerprint found...\n"+res.errorMessage);
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Decrypting Text!", "No Matching Fingerprint found...\n"+res.errorMessage);
     return;
   }
   if (!res.decryptionSuccess) {
-    QMessageBox msg;
-    msg.setText("Error Encrypting Text!");
-    msg.setInformativeText(res.errorMessage);
-    msg.setDefaultButton(QMessageBox::Ok);
-    msg.exec();
+    pluginMessageBox("Error Encrypting Text!", res.errorMessage);
     return;
   }
   v->document()->text();
