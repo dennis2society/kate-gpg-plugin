@@ -11,7 +11,6 @@ in KDE's text editor KATE.
   (auto-selects the most recently created key)
 + Manual selection of key used for encryption
 + Symmetric encryption possible
-+ Current UI selection saved
 
 ## Prerequisites
 + Qt development libraries are installed
