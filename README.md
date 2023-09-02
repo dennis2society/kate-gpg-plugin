@@ -61,17 +61,21 @@ This line should do it for most recent Ubuntu based distributions:<br />
     <code>cmake --build build/</code>
   </li>
   <li>
-    Symlink/Copy the plugin to the Kate plugin path. This requires sudo!<br />
-    In my Ubuntu VM symlinking the plugin did not work. Plugin doesn't show up in Kate unless copied...<br />
-    Hint: You can use the CMAKE_INSTALL_PREFIX and then source the build/prefix.sh to add
-    a custom non-root Kate plugin path.<br />
+    Install the plugin to the Kate plugin path. This requires sudo!<br />
     <ul>
       <li>
-        <b>Manjaro:</b><br /><code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code><br />
-        or: (This only works in Manjaro, the default Qt install path is not correct in Ubuntu...)<br /><code>sudo cmake --install build/</code><br />
+        <b>Recommended: </b><code>sudo cmake --install build/</code><br />
+        (I had cases when this was unreliable... If this does not work see manual installation below)<br />
       </li>
       <li>
-        <b>(K)Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code><br />
+        <b>Manual installation in Manjaro:</b><br />
+        <code>sudo cp build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code><br />
+        or if you prefer a symlink:<br />
+        <code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code><br />
+      </li>
+      <li>
+        <b>Manual installation in (K)Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code><br />
+        (In my Ubuntu VM symlinking the plugin did not work. Plugin doesn't show up in Kate unless copied...)<br />
       </li>
     </ul>
   </li>
