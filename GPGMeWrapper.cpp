@@ -34,7 +34,7 @@ QVector<QString> getUIDsForKey(GpgME::Key key) {
 }
 
 /// class functions
-GPGMeWrapper::GPGMeWrapper() { loadKeys(""); }
+GPGMeWrapper::GPGMeWrapper() { loadKeys(false, ""); }
 
 GPGMeWrapper::~GPGMeWrapper() { m_keys.clear(); }
 
@@ -44,7 +44,7 @@ void GPGMeWrapper::setSelectedKeyIndex(uint newSelectedKeyIndex) {
   m_selectedKeyIndex = newSelectedKeyIndex;
 }
 
-std::vector<GpgME::Key> GPGMeWrapper::listKeys(const QString &searchPattern_) {
+std::vector<GpgME::Key> GPGMeWrapper::listKeys(bool showOnlyPrivateKeys_, const QString &searchPattern_) {
   GpgME::Error err;
   GpgME::Protocol protocol = GpgME::OpenPGP;
   GpgME::initializeLibrary();
@@ -53,7 +53,7 @@ std::vector<GpgME::Key> GPGMeWrapper::listKeys(const QString &searchPattern_) {
   unsigned int mode = 0;
   ctx->setKeyListMode(mode);
   std::vector<GpgME::Key> keys;
-  err = ctx->startKeyListing(searchPattern_.toUtf8().constData(), false);
+  err = ctx->startKeyListing(searchPattern_.toUtf8().constData(), showOnlyPrivateKeys_);
   if (err) {
     return keys;
   }
@@ -67,10 +67,10 @@ std::vector<GpgME::Key> GPGMeWrapper::listKeys(const QString &searchPattern_) {
   return keys;
 }
 
-void GPGMeWrapper::loadKeys(const QString searchPattern_) {
+void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, const QString searchPattern_) {
   m_keys.clear();
   GPGOperationResult result;
-  const std::vector<GpgME::Key> keys = listKeys(searchPattern_);
+  const std::vector<GpgME::Key> keys = listKeys(showOnlyPrivateKeys_, searchPattern_);
   if (keys.size() == 0) {
     result.errorMessage.append("Error! No keys found...");
     return;
@@ -142,11 +142,12 @@ GPGMeWrapper::decryptString(const QString &inputString_,
 
 const GPGOperationResult GPGMeWrapper::encryptString(
     const QString &inputString_, const QString &fingerprint_,
-    const QString &recipientMail_, bool symmetricEncryption_) {
+    const QString &recipientMail_, bool symmetricEncryption_,
+    bool showOnlyPrivateKeys_) {
   GPGOperationResult result;
 
   std::vector<GpgME::Key> selectedKeys;
-  std::vector<GpgME::Key> keys = listKeys(recipientMail_);
+  std::vector<GpgME::Key> keys = listKeys(showOnlyPrivateKeys_, recipientMail_);
   // find first key for selected fingerprint and mail address
   for (auto &key : keys) {
     const QString fingerprint = QString(key.primaryFingerprint());

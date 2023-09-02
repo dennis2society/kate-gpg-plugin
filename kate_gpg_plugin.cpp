@@ -32,41 +32,47 @@ QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow) {
   return new KateGPGPluginView(this, mainWindow);
 }
 
-KateGPGPluginView::~KateGPGPluginView()
-{
-  savePluginSettings();
-}
+KateGPGPluginView::~KateGPGPluginView() { savePluginSettings(); }
 
-void KateGPGPluginView::readPluginSettings()
-{
+void KateGPGPluginView::readPluginSettings() {
   if (m_pluginSettings != nullptr) {
-      m_pluginSettings->beginGroup("default");
-      m_preferredEmailLineEdit->setText(m_pluginSettings->value("search_string").toString());
-      m_selectedRowIndex = m_pluginSettings->value("selected_key_index").toUInt();
-      if (m_gpgKeyTable->rowCount() > 0) {
-          m_gpgKeyTable->selectRow(m_selectedRowIndex);
-      }
-      uint comboIndex = m_pluginSettings->value("selected_mail_address_index").toUInt();
-      if (comboIndex <= m_preferredEmailAddressComboBox->count()) {
-        m_preferredEmailAddressComboBox->setCurrentIndex(
-            m_pluginSettings->value("selected_mail_address_index").toUInt());
-      }
-      m_saveAsASCIICheckbox->setChecked(m_pluginSettings->value("use_ASCII_armor").toBool());
-      m_symmetricEncryptioCheckbox->setChecked(m_pluginSettings->value("use_symmetric_encryption").toBool());
-      m_pluginSettings->endGroup();
+    m_pluginSettings->beginGroup("default");
+    m_preferredEmailLineEdit->setText(
+        m_pluginSettings->value("search_string").toString());
+    m_selectedRowIndex = m_pluginSettings->value("selected_key_index").toUInt();
+    if (m_gpgKeyTable->rowCount() > 0) {
+      m_gpgKeyTable->selectRow(m_selectedRowIndex);
+    }
+    uint comboIndex =
+        m_pluginSettings->value("selected_mail_address_index").toUInt();
+    if (comboIndex <= m_preferredEmailAddressComboBox->count()) {
+      m_preferredEmailAddressComboBox->setCurrentIndex(
+          m_pluginSettings->value("selected_mail_address_index").toUInt());
+    }
+    m_saveAsASCIICheckbox->setChecked(
+        m_pluginSettings->value("use_ASCII_armor").toBool());
+    m_symmetricEncryptioCheckbox->setChecked(
+        m_pluginSettings->value("use_symmetric_encryption").toBool());
+    m_showOnlyPrivateKeysCheckbox->setChecked(
+        m_pluginSettings->value("show_only_private_keys").toBool());
+    m_pluginSettings->endGroup();
   }
 }
 
 void KateGPGPluginView::savePluginSettings() {
   if (m_pluginSettings != nullptr) {
-      m_pluginSettings->beginGroup("default");
-      m_pluginSettings->setValue("search_string", m_preferredEmailLineEdit->text());
-      m_pluginSettings->setValue("selected_key_index", m_selectedRowIndex);
-      m_pluginSettings->setValue("selected_mail_address_index",
-                                 m_preferredEmailAddressComboBox->currentIndex());
-      m_pluginSettings->setValue("use_ASCII_armor", m_saveAsASCIICheckbox->isChecked());
-      m_pluginSettings->setValue("use_symmetric_encryption", m_symmetricEncryptioCheckbox->isChecked());
-      m_pluginSettings->endGroup();
+    m_pluginSettings->beginGroup("default");
+    m_pluginSettings->setValue("search_string",
+                               m_preferredEmailLineEdit->text());
+    m_pluginSettings->setValue("selected_key_index", m_selectedRowIndex);
+    m_pluginSettings->setValue("selected_mail_address_index",
+                               m_preferredEmailAddressComboBox->currentIndex());
+    m_pluginSettings->setValue("use_ASCII_armor",
+                               m_saveAsASCIICheckbox->isChecked());
+    m_pluginSettings->setValue("use_symmetric_encryption",
+                               m_symmetricEncryptioCheckbox->isChecked());
+    m_pluginSettings->setValue("show_only_private_keys", m_showOnlyPrivateKeysCheckbox->isChecked());
+    m_pluginSettings->endGroup();
   }
 }
 
@@ -89,21 +95,24 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   m_gpgEncryptButton = new QPushButton("GPG ENcrypt current document");
 
   // Lots of initialization and setting parameters for Qt UI stuff
-  m_verticalLayout = new QVBoxLayout();
+  m_verticalLayout = new QVBoxLayout(m_toolview.get());
   m_titleLabel = new QLabel("<b>Kate GPG Plugin Settings</b>");
   m_titleLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
   m_preferredEmailAddress = QString("");
   m_preferredGPGKeyID = QString("Key ID");
   m_preferredEmailAddressLabel = new QLabel(
       "A search string used to filter keys by available email addresses");
-  m_preferredEmailAddressLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+  m_preferredEmailAddressLabel->setSizePolicy(QSizePolicy::Expanding,
+                                              QSizePolicy::Fixed);
   m_preferredEmailLineEdit = new QLineEdit(m_preferredEmailAddress);
   m_preferredGPGKeyIDLabel =
       new QLabel("Selected GPG Key finerprint for encryption");
   m_EmailAddressSelectLabel =
       new QLabel("<b>To: Email address used for encryption</b>");
-  m_preferredGPGKeyIDLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-  m_EmailAddressSelectLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+  m_preferredGPGKeyIDLabel->setSizePolicy(QSizePolicy::Maximum,
+                                          QSizePolicy::Fixed);
+  m_EmailAddressSelectLabel->setSizePolicy(QSizePolicy::Maximum,
+                                           QSizePolicy::Fixed);
 
   m_preferredEmailAddressComboBox = new QComboBox();
 
@@ -123,17 +132,22 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   m_symmetricEncryptioCheckbox = new QCheckBox("Enable symmetric encryption");
   m_symmetricEncryptioCheckbox->setChecked(false);
 
-  m_gpgKeyTable = new QTableWidget(m_gpgWrapper->getNumKeys(), 5);
+  m_showOnlyPrivateKeysCheckbox = new QCheckBox(
+      "Show only keys for which a private key is available");
+  m_showOnlyPrivateKeysCheckbox->setChecked(false);
+
+  m_gpgKeyTable =
+      new QTableWidget(m_gpgWrapper->getNumKeys(), 5, m_toolview.get());
   m_gpgKeyTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 
   // we want the settings stuff in QScrollArea
-  QScrollArea *scrollArea = new QScrollArea();
+  QScrollArea *scrollArea = new QScrollArea(m_toolview.get());
   scrollArea->setWidgetResizable(true);
   scrollArea->setMinimumHeight(700);
   scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   scrollArea->setAlignment(Qt::AlignTop);
 
-  QWidget *w = new QWidget();
+  QWidget *w = new QWidget(m_toolview.get());
   w->setLayout(m_verticalLayout);
   scrollArea->setWidget(w);
   m_toolview->layout()->addWidget(scrollArea);
@@ -148,6 +162,7 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   m_verticalLayout->addWidget(m_preferredEmailAddressComboBox);
   m_verticalLayout->addWidget(m_preferredGPGKeyIDLabel);
   m_verticalLayout->addWidget(m_selectedKeyIndexEdit);
+  m_verticalLayout->addWidget(m_showOnlyPrivateKeysCheckbox);
   m_verticalLayout->addWidget(m_gpgKeyTable);
 
   m_verticalLayout->insertStretch(-1, 1);
@@ -156,6 +171,10 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
           SLOT(onTableViewSelection()));
   connect(m_preferredEmailLineEdit, SIGNAL(textChanged(QString)), this,
           SLOT(onPreferredEmailAddressChanged(QString)));
+  connect(m_showOnlyPrivateKeysCheckbox,
+          SIGNAL(stateChanged(int)),
+          this,
+          SLOT(onShowOnlyPrivateKeysChanged()));
   connect(m_gpgDecryptButton, SIGNAL(released()), this,
           SLOT(decryptButtonPressed()));
   connect(m_gpgEncryptButton, SIGNAL(released()), this,
@@ -174,6 +193,12 @@ void KateGPGPluginView::onPreferredEmailAddressChanged(QString s_) {
   updateKeyTable();
 }
 
+void KateGPGPluginView::onShowOnlyPrivateKeysChanged() {
+  emit m_gpgKeyTable->itemSelectionChanged();
+  m_preferredEmailAddress = m_preferredEmailLineEdit->text();
+  updateKeyTable();
+}
+
 int pluginMessageBox(const QString title_, const QString msg_) {
   QMessageBox mb;
   mb.setText(title_);
@@ -185,7 +210,7 @@ int pluginMessageBox(const QString title_, const QString msg_) {
 void KateGPGPluginView::decryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-      pluginMessageBox("Error!", "No views available...");
+    pluginMessageBox("Error!", "No views available...");
     return;
   }
   KTextEditor::View *v = views.at(0);
@@ -200,7 +225,10 @@ void KateGPGPluginView::decryptButtonPressed() {
   GPGOperationResult res = m_gpgWrapper->decryptString(
       v->document()->text(), m_selectedKeyIndexEdit->text());
   if (!res.keyFound) {
-    pluginMessageBox("Error Decrypting Text!", "No matching fingerprint found...");
+    pluginMessageBox("Error Decrypting Text!",
+                     "No matching fingerprint found!\n"
+                     "Or this is not a GPG "
+                     "encrypted text...");
     return;
   }
   if (!res.decryptionSuccess) {
@@ -237,7 +265,8 @@ void KateGPGPluginView::encryptButtonPressed() {
           m_preferredEmailAddressComboBox->currentIndex()),
       m_symmetricEncryptioCheckbox->isChecked());
   if (!res.keyFound) {
-    pluginMessageBox("Error Decrypting Text!", "No Matching Fingerprint found...\n"+res.errorMessage);
+    pluginMessageBox("Error Decrypting Text!",
+                     "No Matching Fingerprint found...\n" + res.errorMessage);
     return;
   }
   if (!res.decryptionSuccess) {
@@ -255,7 +284,7 @@ void KateGPGPluginView::onTableViewSelection() {
    * list of available GPG keys.
    */
   m_preferredEmailAddressComboBox->clear();
-  m_gpgWrapper->loadKeys(m_preferredEmailLineEdit->text());
+  m_gpgWrapper->loadKeys(m_showOnlyPrivateKeysCheckbox->isChecked(), m_preferredEmailLineEdit->text());
   QModelIndexList selectedList =
       m_gpgKeyTable->selectionModel()->selectedRows();
   // Currently it is possible to select multiple rows in the QTableWidget.

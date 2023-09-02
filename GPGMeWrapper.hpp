@@ -48,7 +48,7 @@ private:
    * @param searchPattern_ The mail search pattern.
    * @return A list of matching GpgMe::Key
    */
-  std::vector<GpgME::Key> listKeys(const QString &searchPattern_ = "");
+  std::vector<GpgME::Key> listKeys(bool showOnlyPrivateKeys_, const QString &searchPattern_ = "");
 
 public:
   GPGMeWrapper();
@@ -63,7 +63,7 @@ public:
    * @brief This function reads all available keys and
    *        adds its details to the keys list.
    */
-  void loadKeys(const QString searchPattern_);
+  void loadKeys(bool showOnlyPrivateKeys_, const QString searchPattern_);
 
   /**
    * @brief This function attempts to decrypt a given input string
@@ -81,7 +81,8 @@ public:
   const GPGOperationResult encryptString(const QString &inputString_,
                                          const QString &fingerprint_,
                                          const QString &recipientMail_,
-                                         bool symmetricEncryption_ = false);
+                                         bool symmetricEncryption_ = false,
+                                         bool showOnlyPrivateKeys_ = false);
 
   bool isPreferredKey(const GPGKeyDetails d_, const QString &mailAddress_);
 

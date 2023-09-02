@@ -16,7 +16,7 @@ in KDE's text editor KATE.
 + Qt development libraries are installed
 + A CMAKE & C++ build environment is installed
 + C/C++ bindings for GPGMe are installed
-+ At least one public+private GPG key pair (if you want to encrypt to yourself)
++ At least one public+private GPG key pair (if you only want to encrypt to yourself)
 
 ## Caution!
 While this plugin makes it easy to decrypt+encrypt text, it also makes it easy to
@@ -67,39 +67,35 @@ This line should do it for most recent Ubuntu based distributions:<br />
     a custom non-root Kate plugin path.<br />
     <ul>
       <li>
-        <b>Manjaro:</b><br /><code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code>
+        <b>Manjaro:</b><br /><code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code><br />
+        or: (This only works in Manjaro, the default Qt install path is not correct in Ubuntu...)<br /><code>sudo cmake --install build/</code><br />
       </li>
       <li>
-        <b>(K)Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code>
+        <b>(K)Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code><br />
       </li>
     </ul>
   </li>
   <li>Run kate (from the current terminal prompt)</li>
-  <li>Enable the GPG plugin in Kate &rarr; Settings &rarr; Preferences &rarr; Configure Kate &rarr; Plugins.<br />
+  <li>Enable the "<b>GPG Plugin</b>" in Kate &rarr; Settings &rarr; Preferences &rarr; Configure Kate &rarr; Plugins.<br />
     A new vertical button should appear in the left sidebar.<br />
   </li>
 </ul>
 
+## Limitations
+
++ Currently only the default email address for a key fingerprint will be used for encryption
++ No support for subkeys yet
++ Password prompts are handled by GPG(Me) and may look ugly. Won't touch this!
+
 ## TODO ##
 
-+ Fix that !#$%?X§ jumping UI bug
-+ Automatically retrieve key fingerprint/ID and mail address 
++ Automatically retrieve key fingerprint/ID and mail address
   from encrypted file to set as selected "To:" key and mail address
-+ Attach to KATE's "Open File" dialog to suggest automatic 
++ Attach to KATE's "Open File" dialog to suggest automatic
   decryption when a .gpg/.pgp/.asc file is opened
-* Attach to KATE's Save/Save As dialog to strongly suggest to re-encrypt 
+* Attach to KATE's Save/Save As dialog to strongly suggest to re-encrypt
   a currently opened GPG file (to avoid saving it as unencrypted).
 * Sign and verify documents
 * Add support for subkeys
-
-## Limitations
-
-+ At the moment there exists an annoying UI bug where the plugin settings box jumps down when 
-  changing the settings/document width. Setting the Kate window to fullscreen fixes this until 
-  next resize.
-+ No support for subkeys yet
-+ Currently only the default email address for a key fingerprint will be used for encryption
-+ Password prompts are handled by GPG(Me) and may look ugly. Won't touch this!
-
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
