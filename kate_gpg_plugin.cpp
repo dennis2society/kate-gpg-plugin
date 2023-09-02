@@ -189,7 +189,7 @@ void KateGPGPluginView::decryptButtonPressed() {
     return;
   }
   KTextEditor::View *v = views.at(0);
-  if (!v || !v->document()) {
+  if (!v || !v->document() || v->document()->isEmpty()) {
     pluginMessageBox("Error Decrypting Text!", "Document is empty..");
     return;
   }
