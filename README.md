@@ -32,7 +32,7 @@ save a currently decrypted file as plain text, leaving it unecrypted.
 
 ### Dependencies
 This plugin was developed and built on Manjaro Linux running KDE Plasma. I have
-tested the build in a fresh (K)Ubuntu 22.04.3 LTS VM and had to install at least these
+tested the build in a fresh non-KDE Ubuntu 22.04.3 LTS VM and had to install at least these
 packages manually:
 <ul>
   <li>git</li>
@@ -80,7 +80,7 @@ This line should do it for most recent Ubuntu based distributions:<br />
         <code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code><br />
       </li>
       <li>
-        <b>Manual installation in (K)Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code><br />
+        <b>Manual installation in Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code><br />
         (In my Ubuntu VM symlinking the plugin did not work. Plugin doesn't show up in Kate unless copied...)<br />
       </li>
     </ul>
