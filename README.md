@@ -53,12 +53,18 @@ This line should do it for most recent Ubuntu based distributions:<br />
 ### Build
 <ul>
   <li>Clone the git repository</li>
-  <li>Run CMake in the cloned folder (if it exists delete the <code>build/</code> folder first just to be sure):</li>
+  <li>Run CMake in the cloned folder:</li>
+  <ul>
+    <li>
+      <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release</code>
+    </li>
+  </ul>
   <li>
-    <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release</code>
-  </li>
-  <li>
-    <code>cmake --build build/</code>
+    <ul>
+      <li>
+        <code>cmake --build build/</code>
+      </li>
+    </ul>
   </li>
   <li>
     Install the plugin to the Kate plugin path. This requires sudo!<br />
@@ -80,7 +86,7 @@ This line should do it for most recent Ubuntu based distributions:<br />
     </ul>
   </li>
   <li>Run kate (from the current terminal prompt)</li>
-  <li>Enable the "<b>GPG Plugin</b>" in Kate &rarr; Settings &rarr; Preferences &rarr; Configure Kate &rarr; Plugins.<br />
+  <li>Enable the "<b>GPG Plugin</b>" in Kate &rarr; Settings &rarr; Configure Kate &rarr; Plugins.<br />
     A new vertical button should appear in the left sidebar.<br />
   </li>
 </ul>
