@@ -64,7 +64,7 @@ This line should do it for most recent Ubuntu based distributions:<br />
     Install the plugin to the Kate plugin path. This requires sudo!<br />
     <ul>
       <li>
-        <b>Recommended: </b><code>sudo cmake --install build/</code><br />
+        <b>Recommended: </b><br /><code>sudo cmake --install build/</code><br />
         (I had cases when this was unreliable... If this does not work see manual installation below)<br />
       </li>
       <li>
