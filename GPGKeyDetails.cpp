@@ -43,7 +43,7 @@ const QVector<QString>& GPGKeyDetails::mailAdresses() const { return m_mailAddre
 
 size_t GPGKeyDetails::getNumUIds() const { return m_uids.size(); }
 
-const QString timestampToQString(const int64_t timestamp_) {
+const QString timestampToQString(const time_t timestamp_) {
   QDateTime dt;
   dt.setTime_t(timestamp_);
   return dt.toString(QString("yyyy-MM-dd"));
