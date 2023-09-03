@@ -59,13 +59,11 @@ This line should do it for recent Ubuntu based distributions:<br />
       <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release</code>
     </li>
   </ul>
-  <li>
-    <ul>
+  <ul>
       <li>
         <code>cmake --build build/</code>
       </li>
-    </ul>
-  </li>
+  </ul>
   <li>
     Install the plugin to the Kate plugin path. This requires sudo!<br />
     <ul>
