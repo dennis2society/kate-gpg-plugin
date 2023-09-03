@@ -4,7 +4,7 @@ This plugin allows to GPG decrypt and encrypt text files
 using the [GPGMe library](https://gnupg.org/software/gpgme/index.html) 
 in KDE's text editor KATE.
 
-![image info](./kate_gpg_plugin_screenshot.jpg)
+![A screenshot of the GPG plugin settings](./kate_gpg_plugin_screenshot.jpg)
 
 ## Features
 + Plugin shows all available GPG keys with basic name filtering
@@ -13,14 +13,14 @@ in KDE's text editor KATE.
 + Symmetric encryption possible
 
 ## Prerequisites
++ A CMake & C++ build environment is installed
 + Qt development libraries are installed
-+ A CMAKE & C++ build environment is installed
-+ C/C++ bindings for GPGMe are installed
++ C/C++ bindings for GPGMEpp are installed
 + At least one public+private GPG key pair (if you only want to encrypt to yourself)
 
 ## Caution!
 While this plugin makes it easy to decrypt+encrypt text, it also makes it easy to
-mess things up! You could accidentally encrypt a file, e.g. with a key 
+mess things up. You could accidentally encrypt a file, e.g. with a key
 that is not yours, which then you wouldn't be able to decrypt. Or you could accidentally
 save a currently decrypted file as plain text, leaving it unecrypted.
 
@@ -47,7 +47,7 @@ packages manually:
   <li>libecm1-dev</li>
 </ul>
 
-This line should do it for most recent Ubuntu based distributions:<br />
+This line should do it for recent Ubuntu based distributions:<br />
 <code>sudo apt install git cmake extra-cmake-modules cmake-extras g++ kate libgpgmepp-dev libgcrypt20-dev libgpg-error-dev libecm1-dev</code>
 
 ### Build
