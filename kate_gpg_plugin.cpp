@@ -37,24 +37,24 @@ KateGPGPluginView::~KateGPGPluginView() { savePluginSettings(); }
 void KateGPGPluginView::readPluginSettings() {
   if (m_pluginSettings != nullptr) {
     m_pluginSettings->beginGroup("default");
-    m_preferredEmailLineEdit->setText(
-        m_pluginSettings->value("search_string").toString());
-    m_selectedRowIndex = m_pluginSettings->value("selected_key_index").toUInt();
-    if (m_gpgKeyTable->rowCount() > 0) {
-      m_gpgKeyTable->selectRow(m_selectedRowIndex);
-    }
     uint comboIndex =
         m_pluginSettings->value("selected_mail_address_index").toUInt();
-    if (comboIndex <= m_preferredEmailAddressComboBox->count()) {
-      m_preferredEmailAddressComboBox->setCurrentIndex(
-          m_pluginSettings->value("selected_mail_address_index").toUInt());
-    }
     m_saveAsASCIICheckbox->setChecked(
         m_pluginSettings->value("use_ASCII_armor").toBool());
     m_symmetricEncryptioCheckbox->setChecked(
         m_pluginSettings->value("use_symmetric_encryption").toBool());
     m_showOnlyPrivateKeysCheckbox->setChecked(
         m_pluginSettings->value("show_only_private_keys").toBool());
+    m_preferredEmailLineEdit->setText(
+        m_pluginSettings->value("search_string").toString());
+    m_selectedRowIndex = m_pluginSettings->value("selected_key_index").toUInt();
+    if (m_gpgKeyTable->rowCount() > 0) {
+      m_gpgKeyTable->selectRow(m_selectedRowIndex);
+    }
+    if (comboIndex <= m_preferredEmailAddressComboBox->count()) {
+      m_preferredEmailAddressComboBox->setCurrentIndex(
+          m_pluginSettings->value("selected_mail_address_index").toUInt());
+    }
     m_pluginSettings->endGroup();
   }
 }
