@@ -31,6 +31,7 @@ struct GPGOperationResult {
   bool keyFound = false;
   bool decryptionSuccess = false;
   QString errorMessage;
+  QString keyIDUsedForDecryption;
 };
 
 class GPGMeWrapper {
@@ -63,7 +64,7 @@ public:
    * @brief This function reads all available keys and
    *        adds its details to the keys list.
    */
-  void loadKeys(bool showOnlyPrivateKeys_, const QString searchPattern_);
+  void loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_, const QString searchPattern_);
 
   /**
    * @brief This function attempts to decrypt a given input string

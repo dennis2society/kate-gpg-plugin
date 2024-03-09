@@ -63,6 +63,7 @@ public slots:
   void onTableViewSelection();    // listen to changes in the GPG key list table
   void onPreferredEmailAddressChanged(QString s_);
   void onShowOnlyPrivateKeysChanged();
+  void onHideExpiredKeysChanged();
   void decryptButtonPressed();
   void encryptButtonPressed();
 
@@ -94,6 +95,7 @@ private:
   QCheckBox *m_saveAsASCIICheckbox;
   QCheckBox *m_symmetricEncryptioCheckbox;
   QCheckBox *m_showOnlyPrivateKeysCheckbox;
+  QCheckBox *m_hideExpiredKeysCheckbox;
   QTableWidget *m_gpgKeyTable;
   QStringList m_gpgKeyTableHeader;
 

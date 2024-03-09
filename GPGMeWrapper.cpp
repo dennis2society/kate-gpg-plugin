@@ -34,7 +34,7 @@ QVector<QString> getUIDsForKey(GpgME::Key key) {
 }
 
 /// class functions
-GPGMeWrapper::GPGMeWrapper() { loadKeys(false, ""); }
+GPGMeWrapper::GPGMeWrapper() { loadKeys(false, true, ""); }
 
 GPGMeWrapper::~GPGMeWrapper() { m_keys.clear(); }
 
@@ -67,7 +67,7 @@ std::vector<GpgME::Key> GPGMeWrapper::listKeys(bool showOnlyPrivateKeys_, const 
   return keys;
 }
 
-void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, const QString searchPattern_) {
+void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_, const QString searchPattern_) {
   m_keys.clear();
   GPGOperationResult result;
   const std::vector<GpgME::Key> keys = listKeys(showOnlyPrivateKeys_, searchPattern_);
@@ -76,6 +76,11 @@ void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, const QString searchPatte
     return;
   }
   for (auto key = keys.begin(); key != keys.end(); ++key) {
+    if (hideExpiredKeys_) {
+      if (key->isExpired()) {
+          continue;
+      }
+    }
     GPGKeyDetails d;
     d.loadFromGPGMeKey(*key);
     m_keys.push_back(d);
@@ -131,6 +136,11 @@ GPGMeWrapper::decryptString(const QString &inputString_,
       ctx->decrypt(encryptedString, decryptedString);
   if (d_res.error() == 0) {
     result.decryptionSuccess = true;
+    //result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
+    for (auto i = 0; i < d_res.recipients().size(); ++i) {
+      result.keyIDUsedForDecryption += QString(d_res.recipients().at(i).keyID()) + QString("\n");
+    }
+
   } else {
     result.errorMessage.append(d_res.error().asString());
     return result;
