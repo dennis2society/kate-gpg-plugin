@@ -50,7 +50,7 @@ size_t GPGKeyDetails::getNumUIds() const { return m_uids.size(); }
 
 const QString timestampToQString(const time_t timestamp_) {
   QDateTime dt;
-  dt.setTime_t(timestamp_);
+  dt.setSecsSinceEpoch(timestamp_);
   return dt.toString(QString("yyyy-MM-dd"));
 }
 
