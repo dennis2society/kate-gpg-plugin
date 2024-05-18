@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
 project(kate_gpg_plugin VERSION 1.0)
 
-find_package(ECM ${KF5_DEP_VERSION} QUIET REQUIRED NO_MODULE)
+find_package(ECM QUIET REQUIRED NO_MODULE)
 
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-include(KDEInstallDirs)
-include(KDECMakeSettings)
-
 find_package(Qt${QT_MAJOR_VERSION}Widgets CONFIG REQUIRED)
 
-set(KF5_DEP_VERSION "5.90")
-find_package(KF5 ${KF5_DEP_VERSION}
+include(KDEInstallDirs${QT_MAJOR_VERSION})
+include(KDECMakeSettings)
+
+#set(KF6_DEP_VERSION "${QT_MAJOR_VERSION}")
+find_package(KF${QT_MAJOR_VERSION}
     REQUIRED COMPONENTS
         CoreAddons # Core addons on top of QtCore
         I18n # For localization
@@ -42,7 +42,8 @@ target_compile_definitions(kate_gpg_plugin PRIVATE TRANSLATION_DOMAIN="kate_gpg_
 
 target_link_libraries(kate_gpg_plugin
     PRIVATE
-    KF5::CoreAddons KF5::I18n KF5::TextEditor
+    KF${QT_MAJOR_VERSION}::CoreAddons KF${QT_MAJOR_VERSION}::I18n KF${QT_MAJOR_VERSION}::TextEditor
     gpgmepp
 )
 
+feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
