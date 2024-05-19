@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(kate_gpg_plugin VERSION 1.0)
 
-find_package(ECM QUIET REQUIRED NO_MODULE)
+find_package(ECM ${KF5_DEP_VERSION} QUIET REQUIRED NO_MODULE)
 
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
@@ -11,7 +11,6 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 
 find_package(KF${QT_MAJOR_VERSION}TextEditor ${KF5_DEP_VERSION} QUIET REQUIRED)
-message(INFO ${KDE_INSTALL_FULL_QTPLUGINDIR})
 
 #set(KF5_DEP_VERSION "${QT_MAJOR_VERSION}")
 find_package(KF${QT_MAJOR_VERSION}
