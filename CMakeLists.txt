@@ -10,9 +10,9 @@ find_package(Qt${QT_MAJOR_VERSION}Widgets CONFIG REQUIRED)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 
+set(KF5_DEP_VERSION "${QT_MAJOR_VERSION}")
 find_package(KF${QT_MAJOR_VERSION}TextEditor ${KF5_DEP_VERSION} QUIET REQUIRED)
 
-#set(KF5_DEP_VERSION "${QT_MAJOR_VERSION}")
 find_package(KF${QT_MAJOR_VERSION}
     REQUIRED COMPONENTS
         CoreAddons # Core addons on top of QtCore
