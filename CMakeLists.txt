@@ -22,8 +22,13 @@ find_package(KF${QT_MAJOR_VERSION}
 )
 
 # This line defines the actual target
-kcoreaddons_add_plugin(kate_gpg_plugin # your plugin name here
-    INSTALL_NAMESPACE "kf6/ktexteditor")
+if (QT_MAJOR_VERSION EQUAL 5)
+    kcoreaddons_add_plugin(kate_gpg_plugin
+        INSTALL_NAMESPACE "ktexteditor")
+else ()
+    kcoreaddons_add_plugin(kate_gpg_plugin
+        INSTALL_NAMESPACE "kf6/ktexteditor")
+endif ()
 
 target_sources(
   kate_gpg_plugin
