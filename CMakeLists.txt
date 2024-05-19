@@ -7,10 +7,13 @@ list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(Qt${QT_MAJOR_VERSION}Widgets CONFIG REQUIRED)
 
-include(KDEInstallDirs${QT_MAJOR_VERSION})
+include(KDEInstallDirs)
 include(KDECMakeSettings)
 
-#set(KF6_DEP_VERSION "${QT_MAJOR_VERSION}")
+find_package(KF${QT_MAJOR_VERSION}TextEditor ${KF5_DEP_VERSION} QUIET REQUIRED)
+message(INFO ${KDE_INSTALL_FULL_QTPLUGINDIR})
+
+#set(KF5_DEP_VERSION "${QT_MAJOR_VERSION}")
 find_package(KF${QT_MAJOR_VERSION}
     REQUIRED COMPONENTS
         CoreAddons # Core addons on top of QtCore
@@ -20,7 +23,7 @@ find_package(KF${QT_MAJOR_VERSION}
 
 # This line defines the actual target
 kcoreaddons_add_plugin(kate_gpg_plugin # your plugin name here
-    INSTALL_NAMESPACE "ktexteditor")
+    INSTALL_NAMESPACE "kf6/ktexteditor")
 
 target_sources(
   kate_gpg_plugin
@@ -32,10 +35,9 @@ target_sources(
   GPGMeWrapper.hpp
   GPGMeWrapper.cpp
   kate_gpg_plugin.json
-
 )
 
-add_compile_options(-O3 -Wall -Wextra -Wpedantic)
+add_compile_options(-O3 -Wall -Wextra -Wpedantic -Wno-dev)
 
 # This makes the plugin translatable
 target_compile_definitions(kate_gpg_plugin PRIVATE TRANSLATION_DOMAIN="kate_gpg_plugin")
