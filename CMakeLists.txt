@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(kate_gpg_plugin VERSION 1.0)
 
-find_package(ECM ${KF5_DEP_VERSION} QUIET REQUIRED NO_MODULE)
+set(KF_DEP_VERSION "${QT_MAJOR_VERSION}")
+find_package(ECM ${KF_DEP_VERSION} QUIET REQUIRED NO_MODULE)
 
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
@@ -10,8 +11,7 @@ find_package(Qt${QT_MAJOR_VERSION}Widgets CONFIG REQUIRED)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 
-set(KF5_DEP_VERSION "${QT_MAJOR_VERSION}")
-find_package(KF${QT_MAJOR_VERSION}TextEditor ${KF5_DEP_VERSION} QUIET REQUIRED)
+find_package(KF${QT_MAJOR_VERSION}TextEditor ${KF_DEP_VERSION} QUIET REQUIRED)
 
 find_package(KF${QT_MAJOR_VERSION}
     REQUIRED COMPONENTS
@@ -21,12 +21,12 @@ find_package(KF${QT_MAJOR_VERSION}
 )
 
 # This line defines the actual target
-if (QT_MAJOR_VERSION EQUAL 5)
-    kcoreaddons_add_plugin(kate_gpg_plugin
-        INSTALL_NAMESPACE "ktexteditor")
-else ()
+if (QT_MAJOR_VERSION EQUAL 6)
     kcoreaddons_add_plugin(kate_gpg_plugin
         INSTALL_NAMESPACE "kf6/ktexteditor")
+else ()
+    kcoreaddons_add_plugin(kate_gpg_plugin
+        INSTALL_NAMESPACE "ktexteditor")
 endif ()
 
 target_sources(
