@@ -56,7 +56,7 @@ This line should do it for recent Ubuntu based distributions:<br />
   <li>Run CMake in the cloned folder:</li>
   <ul>
     <li>
-      This is currently only working for Qt >= 5.15.* and Qt6.
+      This works for me with both Qt >= 5.15.* and Qt6.
       <br />
       <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release -D QT_MAJOR_VERSION=5</code> (or 6)
     </li>
