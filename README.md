@@ -58,7 +58,7 @@ This line should do it for recent Ubuntu based distributions:<br />
     <li>
       This works for me with both Qt >= 5.15.* and Qt6.
       <br />
-      <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release -D QT_MAJOR_VERSION=5</code> (or 6)
+      <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release -D QT_MAJOR_VERSION=6</code> (or 5)
     </li>
   </ul>
   <ul>

@@ -15,13 +15,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <GPGMeWrapper.hpp>
 #include <gpgme++/context.h>
 #include <gpgme++/data.h>
 #include <gpgme++/decryptionresult.h>
 #include <gpgme++/encryptionresult.h>
 #include <gpgme++/key.h>
 #include <gpgme++/keylistresult.h>
+
+#include <GPGMeWrapper.hpp>
 #include <vector>
 
 /// local functions
@@ -44,7 +45,8 @@ void GPGMeWrapper::setSelectedKeyIndex(uint newSelectedKeyIndex) {
   m_selectedKeyIndex = newSelectedKeyIndex;
 }
 
-std::vector<GpgME::Key> GPGMeWrapper::listKeys(bool showOnlyPrivateKeys_, const QString &searchPattern_) {
+std::vector<GpgME::Key> GPGMeWrapper::listKeys(bool showOnlyPrivateKeys_,
+                                               const QString &searchPattern_) {
   GpgME::Error err;
   GpgME::Protocol protocol = GpgME::OpenPGP;
   GpgME::initializeLibrary();
@@ -53,7 +55,8 @@ std::vector<GpgME::Key> GPGMeWrapper::listKeys(bool showOnlyPrivateKeys_, const 
   unsigned int mode = 0;
   ctx->setKeyListMode(mode);
   std::vector<GpgME::Key> keys;
-  err = ctx->startKeyListing(searchPattern_.toUtf8().constData(), showOnlyPrivateKeys_);
+  err = ctx->startKeyListing(searchPattern_.toUtf8().constData(),
+                             showOnlyPrivateKeys_);
   if (err) {
     return keys;
   }
@@ -67,10 +70,12 @@ std::vector<GpgME::Key> GPGMeWrapper::listKeys(bool showOnlyPrivateKeys_, const 
   return keys;
 }
 
-void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_, const QString searchPattern_) {
+void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_,
+                            const QString searchPattern_) {
   m_keys.clear();
   GPGOperationResult result;
-  const std::vector<GpgME::Key> keys = listKeys(showOnlyPrivateKeys_, searchPattern_);
+  const std::vector<GpgME::Key> keys =
+      listKeys(showOnlyPrivateKeys_, searchPattern_);
   if (keys.size() == 0) {
     result.errorMessage.append("Error! No keys found...");
     return;
@@ -78,7 +83,7 @@ void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_, co
   for (auto key = keys.begin(); key != keys.end(); ++key) {
     if (hideExpiredKeys_) {
       if (key->isExpired()) {
-          continue;
+        continue;
       }
     }
     GPGKeyDetails d;
@@ -102,9 +107,8 @@ bool GPGMeWrapper::isPreferredKey(const GPGKeyDetails d_,
   return false;
 }
 
-const GPGOperationResult
-GPGMeWrapper::decryptString(const QString &inputString_,
-                            const QString &fingerprint_) {
+const GPGOperationResult GPGMeWrapper::decryptString(
+    const QString &inputString_, const QString &fingerprint_) {
   GPGOperationResult result;
   GpgME::Error err;
   GpgME::Protocol protocol = GpgME::OpenPGP;
@@ -119,7 +123,8 @@ GPGMeWrapper::decryptString(const QString &inputString_,
   const GpgME::Key key =
       ctx->key(fingerprint_.toUtf8().constData(), err, false);
   if (err) {
-    result.errorMessage.append("Error finding key: " + QString(err.asString()));
+    result.errorMessage.append("Error finding key: " +
+                               QString::fromStdString(err.asStdString()));
     return result;
   }
   result.keyFound = true;
@@ -136,13 +141,14 @@ GPGMeWrapper::decryptString(const QString &inputString_,
       ctx->decrypt(encryptedString, decryptedString);
   if (d_res.error() == 0) {
     result.decryptionSuccess = true;
-    //result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
+    // result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
     for (auto i = 0; i < d_res.recipients().size(); ++i) {
-      result.keyIDUsedForDecryption += QString(d_res.recipients().at(i).keyID()) + QString("\n");
+      result.keyIDUsedForDecryption +=
+          QString(d_res.recipients().at(i).keyID()) + QString("\n");
     }
 
   } else {
-    result.errorMessage.append(d_res.error().asString());
+    result.errorMessage.append(d_res.error().asStdString());
     return result;
   }
 
@@ -195,7 +201,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(
       return result;
     } else {
       result.resultString.append("ERROR in syymetric encryption: " +
-                                 QString(err.asString()));
+                                 QString::fromStdString(err.asStdString()));
       return result;
     }
   }
@@ -206,8 +212,9 @@ const GPGOperationResult GPGMeWrapper::encryptString(
     result.resultString = QString::fromStdString(ciphertext.toString());
     return result;
   } else {
-    result.errorMessage.append("Encryption Failed: " +
-                               QString(enRes.error().asString()));
+    result.errorMessage.append(
+        "Encryption Failed: " +
+        QString::fromStdString(enRes.error().asStdString()));
     return result;
   }
   return result;
