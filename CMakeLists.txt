@@ -29,15 +29,17 @@ else ()
         INSTALL_NAMESPACE "ktexteditor")
 endif ()
 
+target_include_directories(kate_gpg_plugin PRIVATE include)
+
 target_sources(
   kate_gpg_plugin
   PRIVATE
-  kate_gpg_plugin.hpp
-  kate_gpg_plugin.cpp
-  GPGKeyDetails.hpp
-  GPGKeyDetails.cpp
-  GPGMeWrapper.hpp
-  GPGMeWrapper.cpp
+  include/kate_gpg_plugin.hpp
+  include/GPGKeyDetails.hpp
+  include/GPGMeWrapper.hpp
+  src/kate_gpg_plugin.cpp
+  src/GPGKeyDetails.cpp
+  src/GPGMeWrapper.cpp
   kate_gpg_plugin.json
 )
 
