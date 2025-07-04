@@ -139,7 +139,7 @@ const GPGOperationResult GPGMeWrapper::decryptString(
   // attempt to decrypt
   GpgME::DecryptionResult d_res =
       ctx->decrypt(encryptedString, decryptedString);
-  if (d_res.error() == 0) {
+  if (!d_res.error().isError()) {
     result.decryptionSuccess = true;
     // result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
     for (auto i = 0; i < d_res.recipients().size(); ++i) {
@@ -207,7 +207,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(
   }
   GpgME::EncryptionResult enRes =
       ctx->encrypt(selectedKeys, plainTextData, ciphertext, flags);
-  if (enRes.error() == 0) {
+  if (!enRes.error().isError()) {
     result.decryptionSuccess = true;
     result.resultString = QString::fromStdString(ciphertext.toString());
     return result;
