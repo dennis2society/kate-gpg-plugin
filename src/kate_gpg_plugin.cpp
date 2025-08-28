@@ -73,8 +73,10 @@ void KateGPGPluginView::savePluginSettings() {
                                m_saveAsASCIICheckbox->isChecked());
     m_pluginSettings->setValue("use_symmetric_encryption",
                                m_symmetricEncryptioCheckbox->isChecked());
-    m_pluginSettings->setValue("show_only_private_keys", m_showOnlyPrivateKeysCheckbox->isChecked());
-    m_pluginSettings->setValue("hide_expired_secret_keys", m_hideExpiredKeysCheckbox->isChecked());
+    m_pluginSettings->setValue("show_only_private_keys",
+                               m_showOnlyPrivateKeysCheckbox->isChecked());
+    m_pluginSettings->setValue("hide_expired_secret_keys",
+                               m_hideExpiredKeysCheckbox->isChecked());
     m_pluginSettings->endGroup();
   }
 }
@@ -84,13 +86,13 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
     : m_mainWindow(mainwindow) {
   m_gpgWrapper = new GPGMeWrapper();
   m_toolview.reset(m_mainWindow->createToolView(
-      plugin,                        // pointer to plugin
-      "gpgPlugin",                   // just an identifier for the toolview
-      KTextEditor::MainWindow::Left, // we want to create a toolview on the
-                                     // left side
+      plugin,                         // pointer to plugin
+      "gpgPlugin",                    // just an identifier for the toolview
+      KTextEditor::MainWindow::Left,  // we want to create a toolview on the
+                                      // left side
       QIcon::fromTheme("security-medium"),
-      i18n("GPG Plugin"))); // User visible name of the toolview, i18n means it
-                            // will be available for translation
+      i18n("GPG Plugin")));  // User visible name of the toolview, i18n means it
+                             // will be available for translation
   m_toolview->setMinimumHeight(700);
 
   // BUTTONS!
@@ -135,8 +137,8 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   m_symmetricEncryptioCheckbox = new QCheckBox("Enable symmetric encryption");
   m_symmetricEncryptioCheckbox->setChecked(false);
 
-  m_showOnlyPrivateKeysCheckbox = new QCheckBox(
-      "Show only keys for which a private key is available");
+  m_showOnlyPrivateKeysCheckbox =
+      new QCheckBox("Show only keys for which a private key is available");
   m_showOnlyPrivateKeysCheckbox->setChecked(false);
 
   m_hideExpiredKeysCheckbox = new QCheckBox("Hide Expired Keys");
@@ -178,13 +180,9 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
           SLOT(onTableViewSelection()));
   connect(m_preferredEmailLineEdit, SIGNAL(textChanged(QString)), this,
           SLOT(onPreferredEmailAddressChanged(QString)));
-  connect(m_showOnlyPrivateKeysCheckbox,
-          SIGNAL(stateChanged(int)),
-          this,
+  connect(m_showOnlyPrivateKeysCheckbox, SIGNAL(stateChanged(int)), this,
           SLOT(onShowOnlyPrivateKeysChanged()));
-  connect(m_hideExpiredKeysCheckbox,
-          SIGNAL(stateChanged(int)),
-          this,
+  connect(m_hideExpiredKeysCheckbox, SIGNAL(stateChanged(int)), this,
           SLOT(onHideExpiredKeysChanged()));
   connect(m_gpgDecryptButton, SIGNAL(released()), this,
           SLOT(decryptButtonPressed()));
@@ -256,10 +254,20 @@ void KateGPGPluginView::decryptButtonPressed() {
   for (auto i = 0; i < m_gpgWrapper->getNumKeys(); ++i) {
     const GPGKeyDetails &kd = m_gpgWrapper->getKeys().at(i);
     if (kd.keyID().compare(res.keyIDUsedForDecryption) == 0) {
-      pluginMessageBox("KeyID used for decryption Found!", res.keyIDUsedForDecryption);
+      pluginMessageBox("KeyID used for decryption Found!",
+                       res.keyIDUsedForDecryption);
     }
   }
-  v->document()->setText(res.resultString);
+  // v->document()->setText(res.resultString);
+  //  Experiment to disable backup saves for GPG files
+  KTextEditor::Document *doc = v->document();
+  QStringList cKeys = doc->configKeys();
+  QString tstring;
+  foreach (QString s, cKeys) {
+    QVariant cVal = doc->configValue(s);
+    tstring.append(s + ": " + cVal.toString() + "\n");
+  }
+  v->document()->setText(tstring);
 }
 
 void KateGPGPluginView::encryptButtonPressed() {
@@ -308,7 +316,9 @@ void KateGPGPluginView::onTableViewSelection() {
    * list of available GPG keys.
    */
   m_preferredEmailAddressComboBox->clear();
-  m_gpgWrapper->loadKeys(m_showOnlyPrivateKeysCheckbox->isChecked(), m_hideExpiredKeysCheckbox->isChecked(), m_preferredEmailLineEdit->text());
+  m_gpgWrapper->loadKeys(m_showOnlyPrivateKeysCheckbox->isChecked(),
+                         m_hideExpiredKeysCheckbox->isChecked(),
+                         m_preferredEmailLineEdit->text());
   QModelIndexList selectedList =
       m_gpgKeyTable->selectionModel()->selectedRows();
   // Currently it is possible to select multiple rows in the QTableWidget.
@@ -335,10 +345,9 @@ void KateGPGPluginView::onTableViewSelection() {
   }
 }
 
-QString
-concatenateEmailAddressesToString(const QVector<QString> uids_,
-                                  const QVector<QString> mailAddresses_,
-                                  const QVector<QString> subkeyIDs_) {
+QString concatenateEmailAddressesToString(const QVector<QString> uids_,
+                                          const QVector<QString> mailAddresses_,
+                                          const QVector<QString> subkeyIDs_) {
   assert(uids_.size() == mailAddresses_.size());
   QString out = "";
   for (auto i = 0; i < mailAddresses_.size(); ++i) {
@@ -374,8 +383,8 @@ void KateGPGPluginView::updateKeyTable() {
     makeTableCell(d.creationDate(), numRows, 1);
     makeTableCell(d.expiryDate(), numRows, 2);
     makeTableCell(d.keyLength(), numRows, 3);
-    QString uidsAndMails(
-        concatenateEmailAddressesToString(d.uids(), d.mailAdresses(), d.subkeyIDs()));
+    QString uidsAndMails(concatenateEmailAddressesToString(
+        d.uids(), d.mailAdresses(), d.subkeyIDs()));
     makeTableCell(uidsAndMails, numRows, 4);
     ++numRows;
   }
