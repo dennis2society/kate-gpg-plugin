@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <GPGMeWrapper.hpp>
 #include <KTextEditor/Document>
 #include <KTextEditor/MainWindow>
 #include <KTextEditor/Plugin>
@@ -27,19 +28,18 @@
 #include <QLineEdit>
 #include <QObject>
 #include <QPushButton>
+#include <QSettings>
 #include <QTableWidget>
 #include <QTextBrowser>
 #include <QVBoxLayout>
-#include <QSettings>
 #include <memory>
-#include <GPGMeWrapper.hpp>
 
 // forward declaration
 class GPGKeyDetails;
 
 class KateGPGPlugin : public KTextEditor::Plugin {
   Q_OBJECT
-public:
+ public:
   explicit KateGPGPlugin(QObject *parent,
                          const QList<QVariant> & = QList<QVariant>())
       : KTextEditor::Plugin(parent) {}
@@ -50,24 +50,25 @@ public:
 class KateGPGPluginView : public QObject, public KXMLGUIClient {
   Q_OBJECT
 
-public:
-  explicit KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWindow *mainwindow);
+ public:
+  explicit KateGPGPluginView(KateGPGPlugin *plugin,
+                             KTextEditor::MainWindow *mainwindow);
 
   ~KateGPGPluginView();
 
   void onViewChanged(KTextEditor::View *v);
 
-public slots:
+ public slots:
   void setPreferredEmailAddress();  // use your own email address if you want to
                                     // encrypt to yourself
-  void onTableViewSelection();    // listen to changes in the GPG key list table
+  void onTableViewSelection();  // listen to changes in the GPG key list table
   void onPreferredEmailAddressChanged(QString s_);
   void onShowOnlyPrivateKeysChanged();
   void onHideExpiredKeysChanged();
   void decryptButtonPressed();
   void encryptButtonPressed();
 
-private:
+ private:
   KTextEditor::MainWindow *m_mainWindow = nullptr;
   // The top level toolview widget
   std::unique_ptr<QWidget> m_toolview;
@@ -99,16 +100,21 @@ private:
   QTableWidget *m_gpgKeyTable;
   QStringList m_gpgKeyTableHeader;
 
-  QSettings* m_pluginSettings;
+  QSettings *m_pluginSettings;
 
   // private functions
   void updateKeyTable();
 
-  const QTableWidgetItem
-  convertKeyDetailsToTableItem(const GPGKeyDetails &keyDetails_);
+  const QTableWidgetItem convertKeyDetailsToTableItem(
+      const GPGKeyDetails &keyDetails_);
 
   void makeTableCell(const QString cellValue, uint row, uint col);
 
   void readPluginSettings();
   void savePluginSettings();
+
+  // Kate does not print debug output to commandline.
+  // So we will simply abuse the document text and replace it
+  // with relevant info for debug purposes!
+  void setDebugTextInDocument(const QString &text_);
 };

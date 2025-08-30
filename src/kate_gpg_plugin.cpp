@@ -15,6 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <qdebug.h>
+
 #include <GPGKeyDetails.hpp>
 #include <KLocalizedString>
 #include <KPluginFactory>
@@ -222,6 +224,16 @@ int pluginMessageBox(const QString title_, const QString msg_) {
   return mb.exec();
 }
 
+void KateGPGPluginView::setDebugTextInDocument(const QString &text_) {
+  QList<KTextEditor::View *> views = m_mainWindow->views();
+  if (views.size() < 1) {
+    pluginMessageBox("Error!", "No views available...");
+    return;
+  }
+  KTextEditor::View *v = views.at(0);
+  v->document()->setText(text_);
+}
+
 void KateGPGPluginView::decryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
@@ -258,7 +270,8 @@ void KateGPGPluginView::decryptButtonPressed() {
                        res.keyIDUsedForDecryption);
     }
   }
-  // v->document()->setText(res.resultString);
+  v->document()->setText(res.resultString);
+  qDebug() << "HUIIII!";
   //  Experiment to disable backup saves for GPG files
   KTextEditor::Document *doc = v->document();
   QStringList cKeys = doc->configKeys();
@@ -267,7 +280,23 @@ void KateGPGPluginView::decryptButtonPressed() {
     QVariant cVal = doc->configValue(s);
     tstring.append(s + ": " + cVal.toString() + "\n");
   }
-  v->document()->setText(tstring);
+  tstring.append("Key ID used for decryption: " + res.keyIDUsedForDecryption +
+                 "\n");
+  // search for decryption key ID in available keys
+  for (auto i = 0; i < m_gpgKeyTable->rowCount(); ++i) {
+    QTableWidgetItem *detailsItem = m_gpgKeyTable->item(i, 4);
+    QString detailsString = detailsItem->text();
+    tstring.append(detailsString);
+    if (detailsString.contains(res.keyIDUsedForDecryption)) {
+      tstring.append("KEY FOUND!\n\n");
+      m_selectedRowIndex = i;
+      m_gpgKeyTable->selectRow(i);
+      break;
+    } else {
+      tstring.append("KEY NOT FOUND...\n\n");
+    }
+  }
+  setDebugTextInDocument(tstring);
 }
 
 void KateGPGPluginView::encryptButtonPressed() {

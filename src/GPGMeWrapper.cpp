@@ -144,7 +144,7 @@ const GPGOperationResult GPGMeWrapper::decryptString(
     // result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
     for (auto i = 0; i < d_res.recipients().size(); ++i) {
       result.keyIDUsedForDecryption +=
-          QString(d_res.recipients().at(i).keyID()) + QString("\n");
+          QString(d_res.recipients().at(i).keyID());
     }
 
   } else {
