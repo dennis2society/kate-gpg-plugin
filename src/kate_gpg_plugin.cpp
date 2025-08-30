@@ -262,41 +262,18 @@ void KateGPGPluginView::decryptButtonPressed() {
     pluginMessageBox("Error Decrypting Text!", res.errorMessage);
     return;
   }
-  pluginMessageBox("KeyID used for decryption:", res.keyIDUsedForDecryption);
-  for (auto i = 0; i < m_gpgWrapper->getNumKeys(); ++i) {
-    const GPGKeyDetails &kd = m_gpgWrapper->getKeys().at(i);
-    if (kd.keyID().compare(res.keyIDUsedForDecryption) == 0) {
-      pluginMessageBox("KeyID used for decryption Found!",
-                       res.keyIDUsedForDecryption);
-    }
-  }
   v->document()->setText(res.resultString);
-  qDebug() << "HUIIII!";
-  //  Experiment to disable backup saves for GPG files
-  KTextEditor::Document *doc = v->document();
-  QStringList cKeys = doc->configKeys();
-  QString tstring;
-  foreach (QString s, cKeys) {
-    QVariant cVal = doc->configValue(s);
-    tstring.append(s + ": " + cVal.toString() + "\n");
-  }
-  tstring.append("Key ID used for decryption: " + res.keyIDUsedForDecryption +
-                 "\n");
-  // search for decryption key ID in available keys
+  // Search for decryption key ID in available keys
+  // and autoselect upon finding the correct one.
   for (auto i = 0; i < m_gpgKeyTable->rowCount(); ++i) {
     QTableWidgetItem *detailsItem = m_gpgKeyTable->item(i, 4);
     QString detailsString = detailsItem->text();
-    tstring.append(detailsString);
     if (detailsString.contains(res.keyIDUsedForDecryption)) {
-      tstring.append("KEY FOUND!\n\n");
       m_selectedRowIndex = i;
       m_gpgKeyTable->selectRow(i);
       break;
-    } else {
-      tstring.append("KEY NOT FOUND...\n\n");
     }
   }
-  setDebugTextInDocument(tstring);
 }
 
 void KateGPGPluginView::encryptButtonPressed() {
