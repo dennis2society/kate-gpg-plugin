@@ -176,7 +176,6 @@ const GPGOperationResult GPGMeWrapper::encryptString(
 
   GpgME::Error err;
   GpgME::Protocol protocol = GpgME::OpenPGP;
-  unsigned int mode = 0;
   GpgME::initializeLibrary();
   auto ctx = std::unique_ptr<GpgME::Context>(
       GpgME::Context::createForProtocol(protocol));
@@ -184,7 +183,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(
   ctx->setTextMode(true);
 
   QByteArray bar = inputString_.toUtf8();
-  const QString::size_type length = bar.length();
+  const qsizetype length = bar.length();
   GpgME::Data plainTextData = GpgME::Data(bar.constData(), length);
   GpgME::Data ciphertext;
 
