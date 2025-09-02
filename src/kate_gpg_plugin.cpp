@@ -190,7 +190,11 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
           SLOT(decryptButtonPressed()));
   connect(m_gpgEncryptButton, SIGNAL(released()), this,
           SLOT(encryptButtonPressed()));
-
+  // hook into open/save dialog
+  connect(mainwindow, &KTextEditor::MainWindow::viewCreated, this,
+          [this](KTextEditor::View *view) {
+            connectToOpenAndSaveDialog(view->document());
+          });
   updateKeyTable();
 
   // restore plugin settings
@@ -222,6 +226,35 @@ int pluginMessageBox(const QString title_, const QString msg_) {
   mb.setInformativeText(msg_);
   mb.setDefaultButton(QMessageBox::Ok);
   return mb.exec();
+}
+
+void KateGPGPluginView::connectToOpenAndSaveDialog(KTextEditor::Document *doc) {
+  connect(doc, &KTextEditor::Document::aboutToSave, this,
+          &KateGPGPluginView::onDocumentWillSave);
+}
+
+void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
+  // Called right before save
+  if (doc->url().fileName().toLower().endsWith(".gpg") ||
+      doc->url().fileName().endsWith(".asc")) {
+    QList<KTextEditor::View *> views = m_mainWindow->views();
+    KTextEditor::View *v = views.at(0);
+    QString lastLine;
+    int textLength = v->document()->text().length();
+    for (auto i = 0; i < textLength; ++i) {
+      if ((i >= textLength - 50) && (i < textLength)) {
+        lastLine.append(v->document()->text()[i]);
+      }
+    }
+    pluginMessageBox("ARGH!", lastLine);
+    if (v->document()->text().startsWith("-----BEGIN PGP MESSAGE-----")) {
+      pluginMessageBox("Attempted double encryption detected!",
+                       "Encrypting twice is disabled for now...");
+      return;
+    }
+    v->document()->setText(v->document()->text());
+    encryptButtonPressed();
+  }
 }
 
 void KateGPGPluginView::setDebugTextInDocument(const QString &text_) {
@@ -264,7 +297,7 @@ void KateGPGPluginView::decryptButtonPressed() {
   }
   v->document()->setText(res.resultString);
   // Search for decryption key ID in available keys
-  // and autoselect upon finding the correct one.
+  // and autoselect corresponding row upon finding the correct one.
   for (auto i = 0; i < m_gpgKeyTable->rowCount(); ++i) {
     QTableWidgetItem *detailsItem = m_gpgKeyTable->item(i, 4);
     QString detailsString = detailsItem->text();
@@ -296,6 +329,11 @@ void KateGPGPluginView::encryptButtonPressed() {
     pluginMessageBox("Error Encrypting Text!", "No fingerprint selected...");
     return;
   }
+  if (v->document()->text().startsWith("-----BEGIN PGP MESSAGE-----")) {
+    pluginMessageBox("Attempted double encryption detected!",
+                     "Encrypting twice is disabled for now...");
+    return;
+  }
 
   GPGOperationResult res = m_gpgWrapper->encryptString(
       v->document()->text(), m_selectedKeyIndexEdit->text(),
@@ -311,8 +349,8 @@ void KateGPGPluginView::encryptButtonPressed() {
     pluginMessageBox("Error Encrypting Text!", res.errorMessage);
     return;
   }
-  v->document()->text();
   v->document()->setText(res.resultString);
+  // v->document()->setText(v->document()->text());
 }
 
 void KateGPGPluginView::onTableViewSelection() {

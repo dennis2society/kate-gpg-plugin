@@ -117,4 +117,9 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   // So we will simply abuse the document text and replace it
   // with relevant info for debug purposes!
   void setDebugTextInDocument(const QString &text_);
+
+  // Functions to hook into Kate's save dialog
+  // (used for auto-encryption on save)
+  void connectToOpenAndSaveDialog(KTextEditor::Document *doc);
+  void onDocumentWillSave(KTextEditor::Document *doc);
 };
