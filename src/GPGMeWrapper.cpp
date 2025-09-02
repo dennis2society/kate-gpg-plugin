@@ -183,8 +183,8 @@ const GPGOperationResult GPGMeWrapper::encryptString(
   ctx->setArmor(true);
   ctx->setTextMode(true);
 
-  const QString::size_type length = inputString_.size();
   QByteArray bar = inputString_.toUtf8();
+  const QString::size_type length = bar.length();
   GpgME::Data plainTextData = GpgME::Data(bar.constData(), length);
   GpgME::Data ciphertext;
 
