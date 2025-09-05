@@ -7,6 +7,8 @@ in KDE's text editor KATE.
 ![A screenshot of the GPG plugin settings](./kate_gpg_plugin_screenshot.jpg)
 
 ## Features
++ Saving a decrypted GPG encrypted file will automatically re-encrypt using the 
+  same key that was used to decrypt!
 + Plugin shows all available GPG keys with basic name filtering
   (auto-selects the most recently created key)
 + Manual selection of key used for encryption
@@ -99,13 +101,19 @@ This line should do it for recent Ubuntu based distributions:<br />
 
 ## TODO ##
 
-+ Automatically retrieve key fingerprint/ID and mail address
-  from encrypted file to set as selected "To:" key and mail address
++ ~~Automatically retrieve key fingerprint/ID and mail address
+  from encrypted file to set as selected "To:" key and mail address~~
+  <br />
+  Done!
 + Attach to KATE's "Open File" dialog to suggest automatic
   decryption when a .gpg/.pgp/.asc file is opened
-* Attach to KATE's Save/Save As dialog to strongly suggest to re-encrypt
-  a currently opened GPG file (to avoid saving it as unencrypted).
+* ~~Attach to KATE's Save/Save As dialog to strongly suggest to re-encrypt
+  a currently opened GPG file (to avoid saving it as unencrypted).~~
+  <br />
+  Done!
 * Sign and verify documents
 * Add support for subkeys
+  <br />
+  Partially solved.
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
