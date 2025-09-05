@@ -30,8 +30,8 @@ that is not yours, which then you wouldn't be able to decrypt. Or you could acci
 save a currently decrypted file as plain text, leaving it unecrypted.
 
 + Use with care!
-+ Ctrl+s and SaveAs will automatically (re-)encrypt the file (with either the same 
-  key that was used for decryption or the currently selected one).
++ Ctrl+s and Save/SaveAs will automatically (re-)encrypt the file (with either the same 
+  key that was used for decryption or the default selection).
 + Think twice before pressing Ctrl+S!
 + Ctrl+Z works after encryption and saving.
 
@@ -100,8 +100,10 @@ This line should do it for recent Ubuntu based distributions:<br />
 
 ## Limitations
 
++ At the moment the plugin only can work on a single open document!
+  Opening multiple GPG encrpyted files may cause undefined behaviour!
+  E.g. encrypting a file with the wrong key.
 + Currently only the default email address for a key fingerprint will be used for encryption
-+ Only partial support for subkeys
 + Passphrase prompts are handled by GPG(Me) and may look ugly. Won't touch this!
 
 ## TODO ##
@@ -119,5 +121,7 @@ This line should do it for recent Ubuntu based distributions:<br />
 * Add support for subkeys
   <br />
   Partially solved. :warning:
+* Add support for multiple GPG encrypted "Views" or "Documents" 
+  (this means handling multiple Kate tabs...)
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
