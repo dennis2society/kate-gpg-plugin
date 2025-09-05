@@ -246,10 +246,9 @@ void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
         lastLine.append(v->document()->text()[i]);
       }
     }
-    pluginMessageBox("ARGH!", lastLine);
-    if (v->document()->text().startsWith("-----BEGIN PGP MESSAGE-----")) {
+    if (m_gpgWrapper->isEncrypted(v->document()->text())) {
       pluginMessageBox("Attempted double encryption detected!",
-                       "Encrypting twice is disabled for now...");
+                       "Encrypting more than once is disabled for now...");
       return;
     }
     v->document()->setText(v->document()->text());

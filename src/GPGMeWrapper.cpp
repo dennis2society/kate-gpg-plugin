@@ -218,3 +218,10 @@ const GPGOperationResult GPGMeWrapper::encryptString(
   }
   return result;
 }
+
+bool GPGMeWrapper::isEncrypted(const QString &inputString_) {
+  if (inputString_.startsWith("-----BEGIN PGP MESSAGE-----")) {
+    return true;
+  }
+  return false;
+}

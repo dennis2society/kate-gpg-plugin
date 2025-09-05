@@ -22,9 +22,10 @@
  * We want returned datatypes in C++/Qt types+containers.
  */
 
-#include <QVector>
-#include <GPGKeyDetails.hpp>
 #include <gpgme++/key.h>
+
+#include <GPGKeyDetails.hpp>
+#include <QVector>
 
 struct GPGOperationResult {
   QString resultString;  // de- or encrypted string depending on operation
@@ -35,7 +36,7 @@ struct GPGOperationResult {
 };
 
 class GPGMeWrapper {
-private:
+ private:
   // The list of available GPG Keys
   QVector<GPGKeyDetails> m_keys;
 
@@ -49,9 +50,10 @@ private:
    * @param searchPattern_ The mail search pattern.
    * @return A list of matching GpgMe::Key
    */
-  std::vector<GpgME::Key> listKeys(bool showOnlyPrivateKeys_, const QString &searchPattern_ = "");
+  std::vector<GpgME::Key> listKeys(bool showOnlyPrivateKeys_,
+                                   const QString &searchPattern_ = "");
 
-public:
+ public:
   GPGMeWrapper();
 
   ~GPGMeWrapper();
@@ -64,7 +66,8 @@ public:
    * @brief This function reads all available keys and
    *        adds its details to the keys list.
    */
-  void loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_, const QString searchPattern_);
+  void loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_,
+                const QString searchPattern_);
 
   /**
    * @brief This function attempts to decrypt a given input string
@@ -84,6 +87,14 @@ public:
                                          const QString &recipientMail_,
                                          bool symmetricEncryption_ = false,
                                          bool showOnlyPrivateKeys_ = false);
+
+  /**
+   * @brief To test if a given QString is actually GPG encrypted already.
+   * @param inputString_ The text to be tested
+   * @return true if the inputString_ has sufficient indicators for being
+   *         encrypted. (Currently only one is used...)
+   */
+  bool isEncrypted(const QString &inputString_);
 
   bool isPreferredKey(const GPGKeyDetails d_, const QString &mailAddress_);
 
