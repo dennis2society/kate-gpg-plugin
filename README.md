@@ -106,12 +106,11 @@ This line should do it for recent Ubuntu based distributions:<br />
 
 ## TODO ##
 
-+ ~~Automatically retrieve key fingerprint/ID and mail address
-  from encrypted file to set as selected "To:" key and mail address~~
++ ~~Automatically select key for re-encryption upon decryption success.~~
   <br />
   Done! :white_check_mark:
 + Attach to KATE's "Open File" dialog to suggest automatic
-  decryption when a .gpg/.pgp/.asc file is opened
+  decryption when a .gpg/.pgp/.asc file is opened.
 * ~~Attach to KATE's Save/Save As dialog to strongly suggest to re-encrypt
   a currently opened GPG file (to avoid saving it as unencrypted).~~
   <br />
