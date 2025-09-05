@@ -7,8 +7,11 @@ in KDE's text editor KATE.
 ![A screenshot of the GPG plugin settings](./kate_gpg_plugin_screenshot.jpg)
 
 ## Features
-+ Saving a decrypted GPG encrypted file will automatically re-encrypt using the 
++ Upon successful decryption of a file the plugin will auto-select the
+  the used key/fingerprint for eventual re-encryption.
++ Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the 
   same key that was used to decrypt!
++ Automatic backup files (e.g. with ~ suffix) will NOT be saved unencrypted!
 + Plugin shows all available GPG keys with basic name filtering
   (auto-selects the most recently created key)
 + Manual selection of key used for encryption
@@ -27,6 +30,8 @@ that is not yours, which then you wouldn't be able to decrypt. Or you could acci
 save a currently decrypted file as plain text, leaving it unecrypted.
 
 + Use with care!
++ Ctrl+s and SaveAs will automatically (re-)encrypt the file (with either the same 
+  key that was used for decryption or the currently selected one).
 + Think twice before pressing Ctrl+S!
 + Ctrl+Z works after encryption and saving.
 
@@ -96,24 +101,24 @@ This line should do it for recent Ubuntu based distributions:<br />
 ## Limitations
 
 + Currently only the default email address for a key fingerprint will be used for encryption
-+ No support for subkeys yet
-+ Password prompts are handled by GPG(Me) and may look ugly. Won't touch this!
++ Only partial support for subkeys
++ Passphrase prompts are handled by GPG(Me) and may look ugly. Won't touch this!
 
 ## TODO ##
 
 + ~~Automatically retrieve key fingerprint/ID and mail address
   from encrypted file to set as selected "To:" key and mail address~~
   <br />
-  Done!
+  Done! :white_check_mark:
 + Attach to KATE's "Open File" dialog to suggest automatic
   decryption when a .gpg/.pgp/.asc file is opened
 * ~~Attach to KATE's Save/Save As dialog to strongly suggest to re-encrypt
   a currently opened GPG file (to avoid saving it as unencrypted).~~
   <br />
-  Done!
+  Done! :white_check_mark:
 * Sign and verify documents
 * Add support for subkeys
   <br />
-  Partially solved.
+  Partially solved. :warning:
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
