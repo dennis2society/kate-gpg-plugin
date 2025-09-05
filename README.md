@@ -26,8 +26,11 @@ in KDE's text editor KATE.
 ## Caution!
 While this plugin makes it easy to decrypt+encrypt text, it also makes it easy to
 mess things up. You could accidentally encrypt a file, e.g. with a key
-that is not yours, which then you wouldn't be able to decrypt. Or you could accidentally
-save a currently decrypted file as plain text, leaving it unecrypted.
+that is not yours, which then you wouldn't be able to decrypt. 
+
+~~Or you could accidentally
+save a currently decrypted file as plain text, leaving it unecrypted.~~ 
+Update: I have taken care that this doesn't happen anymore.
 
 + Use with care!
 + Ctrl+s and Save/SaveAs will automatically (re-)encrypt the file (with either the same 
