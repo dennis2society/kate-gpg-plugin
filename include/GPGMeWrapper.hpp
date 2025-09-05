@@ -58,6 +58,10 @@ class GPGMeWrapper {
 
   ~GPGMeWrapper();
 
+  /**
+   * @brief Gets the list of available GPG keys.
+   * @return The list of available GPG keys.
+   */
   const QVector<GPGKeyDetails> &getKeys() const;
 
   size_t getNumKeys() const;
@@ -82,6 +86,21 @@ class GPGMeWrapper {
   const GPGOperationResult decryptString(const QString &inputString_,
                                          const QString &fingerprint_);
 
+  /**
+   * @brief This function attempts to encrypt a given input string
+   *        using the currently selected private key. Will fail if
+   *        no fingerprint is selected in the ey table.
+   * @param inputString_    The input string to be encrypted.
+   * @param fingerprint_    The selected fingerprint/key.
+   * @param recipientMail_ A recipent mail address matched with the
+   *        fingerprint.
+   * @param symmetricEncryption_ A bool to enable symmetric encryption
+   *        (will ask for a symmetric passphrase that must be remembered).
+   *        Default is false.
+   * @param showOnlyPrivateKeys_ Will only display keys for which a private
+   *        key is available.
+   * @return The GPGOerationsResult (see above)
+   */
   const GPGOperationResult encryptString(const QString &inputString_,
                                          const QString &fingerprint_,
                                          const QString &recipientMail_,
@@ -89,7 +108,7 @@ class GPGMeWrapper {
                                          bool showOnlyPrivateKeys_ = false);
 
   /**
-   * @brief To test if a given QString is actually GPG encrypted already.
+   * @brief To test if a given QString is GPG encrypted already.
    * @param inputString_ The text to be tested
    * @return true if the inputString_ has sufficient indicators for being
    *         encrypted. (Currently only one is used...)
