@@ -1,6 +1,6 @@
 # Kate GPG Plugin
 
-This plugin allows transparent editing of GPG encrypted text files 
+This plugin adds transparent editing of GPG encrypted text files 
 using the [GPGMe library](https://gnupg.org/software/gpgme/index.html) 
 in KDE's text editor KATE.
 
