@@ -53,6 +53,8 @@ class GPGMeWrapper {
   std::vector<GpgME::Key> listKeys(bool showOnlyPrivateKeys_,
                                    const QString &searchPattern_ = "");
 
+  QString m_gpgMeVersion;
+
  public:
   GPGMeWrapper();
 
@@ -119,4 +121,5 @@ class GPGMeWrapper {
 
   void setSelectedKeyIndex(uint newSelectedKeyIndex);
   uint selectedKeyIndex() const;
+  const QString &getGpgMeVersion();
 };

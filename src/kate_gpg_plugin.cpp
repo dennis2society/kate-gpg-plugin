@@ -203,6 +203,7 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   // restore plugin settings
   m_pluginSettings = new QSettings(m_settingsName);
   readPluginSettings();
+  qDebug() << "GPGMeVersion: " << m_gpgWrapper->getGpgMeVersion();
 }
 
 void KateGPGPluginView::onPreferredEmailAddressChanged(QString s_) {

@@ -35,7 +35,10 @@ QVector<QString> getUIDsForKey(GpgME::Key key) {
 }
 
 /// class functions
-GPGMeWrapper::GPGMeWrapper() { loadKeys(false, true, ""); }
+GPGMeWrapper::GPGMeWrapper() {
+  loadKeys(false, true, "");
+  m_gpgMeVersion = QString(gpgme_check_version(nullptr));
+}
 
 GPGMeWrapper::~GPGMeWrapper() { m_keys.clear(); }
 
@@ -44,6 +47,8 @@ uint GPGMeWrapper::selectedKeyIndex() const { return m_selectedKeyIndex; }
 void GPGMeWrapper::setSelectedKeyIndex(uint newSelectedKeyIndex) {
   m_selectedKeyIndex = newSelectedKeyIndex;
 }
+
+const QString &GPGMeWrapper::getGpgMeVersion() { return m_gpgMeVersion; }
 
 std::vector<GpgME::Key> GPGMeWrapper::listKeys(bool showOnlyPrivateKeys_,
                                                const QString &searchPattern_) {

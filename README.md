@@ -136,8 +136,5 @@ This line should do it for recent Ubuntu based distributions:<br />
   Partially solved. :warning:
 * Add support for multiple GPG encrypted "Views" or "Documents" 
   (this means handling multiple Kate tabs...)
-* At the moment the plugin cannot be built out-of-the-box because on Ubuntu
-  because Ubuntu ships an outdated version of GPGMepp (still uses old error
-method)
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
