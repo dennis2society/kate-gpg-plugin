@@ -144,7 +144,7 @@ const GPGOperationResult GPGMeWrapper::decryptString(
     // result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
     for (auto i = 0; i < d_res.recipients().size(); ++i) {
       result.keyIDUsedForDecryption +=
-          QString(d_res.recipients().at(i).keyID()) + QString("\n");
+          QString(d_res.recipients().at(i).keyID());
     }
 
   } else {
@@ -217,4 +217,19 @@ const GPGOperationResult GPGMeWrapper::encryptString(
     return result;
   }
   return result;
+}
+
+bool GPGMeWrapper::isEncrypted(const QString &inputString_) {
+  QByteArray bar = inputString_.toUtf8();
+  GpgME::Data dataIn(bar.constData(), bar.size(),
+                     false);  // false = do not copy
+  QByteArray outBuffer;
+  GpgME::Data dataOut(outBuffer);
+  std::unique_ptr<GpgME::Context> ctx(
+      GpgME::Context::createForProtocol(GpgME::OpenPGP));
+  if (!ctx) return false;
+
+  GpgME::DecryptionResult result = ctx->decrypt(dataIn, dataOut);
+
+  return !result.error() && result.numRecipients() > 0;
 }

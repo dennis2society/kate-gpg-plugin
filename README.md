@@ -7,6 +7,11 @@ in KDE's text editor KATE.
 ![A screenshot of the GPG plugin settings](./kate_gpg_plugin_screenshot.jpg)
 
 ## Features
++ Upon successful decryption of a file the plugin will auto-select the
+  the used key/fingerprint for eventual re-encryption.
++ Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the 
+  same key that was used to decrypt!
++ Automatic backup files (e.g. with ~ suffix) will NOT be saved unencrypted!
 + Plugin shows all available GPG keys with basic name filtering
   (auto-selects the most recently created key)
 + Manual selection of key used for encryption
@@ -21,10 +26,15 @@ in KDE's text editor KATE.
 ## Caution!
 While this plugin makes it easy to decrypt+encrypt text, it also makes it easy to
 mess things up. You could accidentally encrypt a file, e.g. with a key
-that is not yours, which then you wouldn't be able to decrypt. Or you could accidentally
-save a currently decrypted file as plain text, leaving it unecrypted.
+that is not yours, which then you wouldn't be able to decrypt. 
+
+~~Or you could accidentally
+save a currently decrypted file as plain text, leaving it unecrypted.~~ 
+Update: I have taken care that this doesn't happen anymore.
 
 + Use with care!
++ Ctrl+s and Save/SaveAs will automatically (re-)encrypt the file (with either the same 
+  key that was used for decryption or the default selection).
 + Think twice before pressing Ctrl+S!
 + Ctrl+Z works after encryption and saving.
 
@@ -93,19 +103,28 @@ This line should do it for recent Ubuntu based distributions:<br />
 
 ## Limitations
 
++ At the moment the plugin only can work on a single open document!
+  Opening multiple GPG encrpyted files may cause undefined behaviour!
+  E.g. encrypting a file with the wrong key.
 + Currently only the default email address for a key fingerprint will be used for encryption
-+ No support for subkeys yet
-+ Password prompts are handled by GPG(Me) and may look ugly. Won't touch this!
++ Passphrase prompts are handled by GPG(Me) and may look ugly. Won't touch this!
 
 ## TODO ##
 
-+ Automatically retrieve key fingerprint/ID and mail address
-  from encrypted file to set as selected "To:" key and mail address
++ ~~Automatically select key for re-encryption upon decryption success.~~
+  <br />
+  Done! :white_check_mark:
 + Attach to KATE's "Open File" dialog to suggest automatic
-  decryption when a .gpg/.pgp/.asc file is opened
-* Attach to KATE's Save/Save As dialog to strongly suggest to re-encrypt
-  a currently opened GPG file (to avoid saving it as unencrypted).
+  decryption when a .gpg/.pgp/.asc file is opened.
+* ~~Attach to KATE's Save/Save As dialog to strongly suggest to re-encrypt
+  a currently opened GPG file (to avoid saving it as unencrypted).~~
+  <br />
+  Done! :white_check_mark:
 * Sign and verify documents
 * Add support for subkeys
+  <br />
+  Partially solved. :warning:
+* Add support for multiple GPG encrypted "Views" or "Documents" 
+  (this means handling multiple Kate tabs...)
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
