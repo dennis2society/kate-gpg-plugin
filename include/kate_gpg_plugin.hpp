@@ -122,4 +122,5 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   // (used for auto-encryption on save)
   void connectToOpenAndSaveDialog(KTextEditor::Document *doc);
   void onDocumentWillSave(KTextEditor::Document *doc);
+  void onDocumentOpened(KTextEditor::Document *doc);
 };

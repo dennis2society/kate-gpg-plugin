@@ -20,6 +20,9 @@
 #include <GPGKeyDetails.hpp>
 #include <KLocalizedString>
 #include <KPluginFactory>
+#include <KTextEditor/Application>
+#include <KTextEditor/Editor>
+#include <KTextEditor/MainWindow>
 #include <QLayout>
 #include <QMessageBox>
 #include <QScrollArea>
@@ -231,6 +234,14 @@ int pluginMessageBox(const QString title_, const QString msg_) {
 void KateGPGPluginView::connectToOpenAndSaveDialog(KTextEditor::Document *doc) {
   connect(doc, &KTextEditor::Document::aboutToSave, this,
           &KateGPGPluginView::onDocumentWillSave);
+  onDocumentOpened(doc);
+}
+
+void KateGPGPluginView::onDocumentOpened(KTextEditor::Document *doc) {
+  if (doc->url().fileName().toLower().endsWith(".gpg") ||
+      doc->url().fileName().endsWith(".asc")) {
+    decryptButtonPressed();
+  }
 }
 
 void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
@@ -239,13 +250,6 @@ void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
       doc->url().fileName().endsWith(".asc")) {
     QList<KTextEditor::View *> views = m_mainWindow->views();
     KTextEditor::View *v = views.at(0);
-    QString lastLine;
-    int textLength = v->document()->text().length();
-    for (auto i = 0; i < textLength; ++i) {
-      if ((i >= textLength - 50) && (i < textLength)) {
-        lastLine.append(v->document()->text()[i]);
-      }
-    }
     if (m_gpgWrapper->isEncrypted(v->document()->text())) {
       pluginMessageBox("GPGPlugin",
                        "Attempted double encryption detected!\nEncrypting more "
