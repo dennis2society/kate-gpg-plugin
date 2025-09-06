@@ -220,8 +220,16 @@ const GPGOperationResult GPGMeWrapper::encryptString(
 }
 
 bool GPGMeWrapper::isEncrypted(const QString &inputString_) {
-  if (inputString_.startsWith("-----BEGIN PGP MESSAGE-----")) {
-    return true;
-  }
-  return false;
+  QByteArray bar = inputString_.toUtf8();
+  GpgME::Data dataIn(bar.constData(), bar.size(),
+                     false);  // false = do not copy
+  QByteArray outBuffer;
+  GpgME::Data dataOut(outBuffer);
+  std::unique_ptr<GpgME::Context> ctx(
+      GpgME::Context::createForProtocol(GpgME::OpenPGP));
+  if (!ctx) return false;
+
+  GpgME::DecryptionResult result = ctx->decrypt(dataIn, dataOut);
+
+  return !result.error() && result.numRecipients() > 0;
 }

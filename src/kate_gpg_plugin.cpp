@@ -238,8 +238,9 @@ void KateGPGPluginView::connectToOpenAndSaveDialog(KTextEditor::Document *doc) {
 }
 
 void KateGPGPluginView::onDocumentOpened(KTextEditor::Document *doc) {
-  if (doc->url().fileName().toLower().endsWith(".gpg") ||
-      doc->url().fileName().endsWith(".asc")) {
+  if ((doc->url().fileName().toLower().endsWith(".gpg") ||
+       doc->url().fileName().endsWith(".asc")) &&
+      m_gpgWrapper->isEncrypted(doc->text())) {
     decryptButtonPressed();
   }
 }
