@@ -223,9 +223,9 @@ void KateGPGPluginView::onHideExpiredKeysChanged() {
   updateKeyTable();
 }
 
-int pluginMessageBox(const QString title_, const QString msg_) {
+int pluginMessageBox(const QString msg_) {
   QMessageBox mb;
-  mb.setText(title_);
+  mb.setText("GPG Plugin");
   mb.setInformativeText(msg_);
   mb.setDefaultButton(QMessageBox::Ok);
   return mb.exec();
@@ -252,9 +252,9 @@ void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
     QList<KTextEditor::View *> views = m_mainWindow->views();
     KTextEditor::View *v = views.at(0);
     if (m_gpgWrapper->isEncrypted(v->document()->text())) {
-      pluginMessageBox("GPGPlugin",
-                       "Attempted double encryption detected!\nEncrypting more "
-                       "than once is disabled for now...");
+      pluginMessageBox(
+          "Attempted double encryption detected!\nEncrypting more "
+          "than once is disabled for now...");
       return;
     }
     v->document()->setText(v->document()->text());
@@ -265,7 +265,7 @@ void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
 void KateGPGPluginView::setDebugTextInDocument(const QString &text_) {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    pluginMessageBox("GPGPlugin!", "Error! No views available...");
+    pluginMessageBox("Error! No views available...");
     return;
   }
   KTextEditor::View *v = views.at(0);
@@ -275,32 +275,30 @@ void KateGPGPluginView::setDebugTextInDocument(const QString &text_) {
 void KateGPGPluginView::decryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    pluginMessageBox("GPGPlugin", "Error! No views available...");
+    pluginMessageBox("Error! No views available...");
     return;
   }
   KTextEditor::View *v = views.at(0);
   if (!v || !v->document() || v->document()->isEmpty()) {
-    pluginMessageBox("GPGPlugin", "Error Decrypting Text! Document is empty..");
+    pluginMessageBox("Error Decrypting Text! Document is empty..");
     return;
   }
   if (m_selectedKeyIndexEdit->text().isEmpty()) {
-    pluginMessageBox("GPGPlugin",
-                     "Error Decrypting Text! No fingerprint selected...");
+    pluginMessageBox("Error Decrypting Text! No fingerprint selected...");
     return;
   }
   GPGOperationResult res = m_gpgWrapper->decryptString(
       v->document()->text(), m_selectedKeyIndexEdit->text());
   if (!res.keyFound) {
-    pluginMessageBox("GPGPlugin",
-                     "Error Decrypting Text!ņ"
-                     "No matching fingerprint found!\n"
-                     "Or this is not a GPG "
-                     "encrypted text...");
+    pluginMessageBox(
+        "Error Decrypting Text!ņ"
+        "No matching fingerprint found!\n"
+        "Or this is not a GPG "
+        "encrypted text...");
     return;
   }
   if (!res.decryptionSuccess) {
-    pluginMessageBox("GPGPlugin",
-                     "Error Decrypting Text!\n" + res.errorMessage);
+    pluginMessageBox("Error Decrypting Text!\n" + res.errorMessage);
     return;
   }
   v->document()->setText(res.resultString);
@@ -320,30 +318,27 @@ void KateGPGPluginView::decryptButtonPressed() {
 void KateGPGPluginView::encryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    pluginMessageBox("GPGPlugin", "Error! No views available...");
+    pluginMessageBox("Error! No views available...");
     return;
   }
   KTextEditor::View *v = views.at(0);
 
   if (!v || !v->document()) {
-    pluginMessageBox("GPGPlugin",
-                     "Error Encrypting Text!\nNo document available...");
+    pluginMessageBox("Error Encrypting Text!\nNo document available...");
     return;
   }
   if (v->document()->text().isEmpty()) {
-    pluginMessageBox("GPGPlugin",
-                     "Error Encrypting Text!\nDocument is empty..");
+    pluginMessageBox("Error Encrypting Text!\nDocument is empty..");
     return;
   }
   if (m_selectedKeyIndexEdit->text().isEmpty()) {
-    pluginMessageBox("GPGPlugin",
-                     "Error Encrypting Text!\nNo fingerprint selected...");
+    pluginMessageBox("Error Encrypting Text!\nNo fingerprint selected...");
     return;
   }
   if (v->document()->text().startsWith("-----BEGIN PGP MESSAGE-----")) {
-    pluginMessageBox("GPGPlugin",
-                     "Attempted double encryption detected!\nEncrypting twice "
-                     "is disabled for now...");
+    pluginMessageBox(
+        "Attempted double encryption detected!\nEncrypting twice "
+        "is disabled for now...");
     return;
   }
 
@@ -354,13 +349,12 @@ void KateGPGPluginView::encryptButtonPressed() {
       m_symmetricEncryptioCheckbox->isChecked());
   if (!res.keyFound) {
     pluginMessageBox(
-        "GPGPlugin",
         "Error Decrypting Text!\nNo Matching Fingerprint found...\n" +
-            res.errorMessage);
+        res.errorMessage);
     return;
   }
   if (!res.decryptionSuccess) {
-    pluginMessageBox("GPGPlugin", "Error Encrypting Text!" + res.errorMessage);
+    pluginMessageBox("Error Encrypting Text!" + res.errorMessage);
     return;
   }
   v->document()->setText(res.resultString);
