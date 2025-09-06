@@ -99,8 +99,7 @@ This line should do it for recent Ubuntu based distributions:<br />
       <li>
         <b>Manual installation in Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code><br />
         (In my Ubuntu VM symlinking the plugin did not work. Plugin doesn't show up in Kate unless copied...)<br />
-        <b>Qt6 in Ubuntu needs a special path:</b><br /><code>sudo cp build/bin/kf6/ktexteditor/kate_gpg_plugin.so
-        /usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/ktexteditor/</code><br />
+        <br /><b>Qt6 in Ubuntu needs a special path:</b><br /><code>sudo cp build/bin/kf6/ktexteditor/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/ktexteditor/</code><br />
       </li>
     </ul>
   </li>
@@ -137,5 +136,8 @@ This line should do it for recent Ubuntu based distributions:<br />
   Partially solved. :warning:
 * Add support for multiple GPG encrypted "Views" or "Documents" 
   (this means handling multiple Kate tabs...)
+* At the moment the plugin cannot be built out-of-the-box because on Ubuntu
+  because Ubuntu ships an outdated version of GPGMepp (still uses old error
+method)
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
