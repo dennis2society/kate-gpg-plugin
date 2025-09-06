@@ -58,10 +58,14 @@ packages manually:
   <li>libgcrypt20-dev</li>
   <li>libgpg-error-dev</li>
   <li>libecm1-dev</li>
+  <li>qt6-base-dev (required since Ubuntu 25.04)</li>
+  <li>libkf6texteditor-dev (required since Ubuntu 25.04</li>
+  <li>qtcreator (Optional but helpful because it installs all Qt6 dev
+  dependencies)</li>
 </ul>
 
 This line should do it for recent Ubuntu based distributions:<br />
-<code>sudo apt install git cmake extra-cmake-modules cmake-extras g++ kate libgpgmepp-dev libgcrypt20-dev libgpg-error-dev libecm1-dev</code>
+<code>sudo apt install git cmake extra-cmake-modules cmake-extras g++ kate libgpgmepp-dev libgcrypt20-dev libgpg-error-dev libecm1-dev libkf6texteditor-dev qt6-base-dev</code>
 
 ### Build
 <ul>
@@ -95,6 +99,8 @@ This line should do it for recent Ubuntu based distributions:<br />
       <li>
         <b>Manual installation in Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code><br />
         (In my Ubuntu VM symlinking the plugin did not work. Plugin doesn't show up in Kate unless copied...)<br />
+        <b>Qt6 in Ubuntu needs a special path:</b><br /><code>sudo cp build/bin/kf6/ktexteditor/kate_gpg_plugin.so
+        /usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/ktexteditor/</code><br />
       </li>
     </ul>
   </li>
