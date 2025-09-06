@@ -2,7 +2,7 @@
 
 This plugin adds transparent editing of GPG encrypted text files 
 using the [GPGMe library](https://gnupg.org/software/gpgme/index.html) 
-in KDE's text editor KATE.
+in [Kate](https://kate-editor.org).
 
 ![A screenshot of the GPG plugin settings](./kate_gpg_plugin_screenshot.jpg)
 
