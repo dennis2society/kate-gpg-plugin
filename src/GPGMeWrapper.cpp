@@ -26,6 +26,11 @@
 #include <GPGMeWrapper.hpp>
 #include <vector>
 
+// This is needed to distinguish GPGMe++ versions
+#define GPGMEPP_VERSION_NUMBER                                   \
+  (GPGMEPP_VERSION_MAJOR * 10000 + GPGMEPP_VERSION_MINOR * 100 + \
+   GPGMEPP_VERSION_PATCH)
+
 /// local functions
 QVector<QString> getUIDsForKey(GpgME::Key key) {
   QVector<QString> result;
@@ -36,10 +41,7 @@ QVector<QString> getUIDsForKey(GpgME::Key key) {
 }
 
 /// class functions
-GPGMeWrapper::GPGMeWrapper() {
-  loadKeys(false, true, "");
-  m_gpgMeVersion = QString(GPGMEPP_VERSION_STRING);
-}
+GPGMeWrapper::GPGMeWrapper() { loadKeys(false, true, ""); }
 
 GPGMeWrapper::~GPGMeWrapper() { m_keys.clear(); }
 
@@ -48,8 +50,6 @@ uint GPGMeWrapper::selectedKeyIndex() const { return m_selectedKeyIndex; }
 void GPGMeWrapper::setSelectedKeyIndex(uint newSelectedKeyIndex) {
   m_selectedKeyIndex = newSelectedKeyIndex;
 }
-
-const QString &GPGMeWrapper::getGpgMeVersion() { return m_gpgMeVersion; }
 
 std::vector<GpgME::Key> GPGMeWrapper::listKeys(bool showOnlyPrivateKeys_,
                                                const QString &searchPattern_) {
@@ -145,7 +145,13 @@ const GPGOperationResult GPGMeWrapper::decryptString(
   // attempt to decrypt
   GpgME::DecryptionResult d_res =
       ctx->decrypt(encryptedString, decryptedString);
+// Meh... we have to distinguish GPGMe++ versions because Ubuntu ships
+// 1.2.4 instead of >=2.0.0
+#if GPGMEPP_VERSION_NUMBER < 20000
+  if (!d_res.error()) {
+#else
   if (!d_res.error().isError()) {
+#endif
     result.decryptionSuccess = true;
     // result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
     for (auto i = 0; i < d_res.recipients().size(); ++i) {
@@ -212,7 +218,13 @@ const GPGOperationResult GPGMeWrapper::encryptString(
   }
   GpgME::EncryptionResult enRes =
       ctx->encrypt(selectedKeys, plainTextData, ciphertext, flags);
+// Meh... we have to distinguish GPGMe++ versions because Ubuntu ships
+// 1.2.4 instead of >=2.0.0
+#if GPGMEPP_VERSION_NUMBER < 20000
+  if (!enRes.error()) {
+#else
   if (!enRes.error().isError()) {
+#endif
     result.decryptionSuccess = true;
     result.resultString = QString::fromStdString(ciphertext.toString());
     return result;

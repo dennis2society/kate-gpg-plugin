@@ -26,6 +26,7 @@
 
 #include <GPGKeyDetails.hpp>
 #include <QVector>
+#include <QVersionNumber>
 
 struct GPGOperationResult {
   QString resultString;  // de- or encrypted string depending on operation
@@ -52,8 +53,6 @@ class GPGMeWrapper {
    */
   std::vector<GpgME::Key> listKeys(bool showOnlyPrivateKeys_,
                                    const QString &searchPattern_ = "");
-
-  QString m_gpgMeVersion;
 
  public:
   GPGMeWrapper();
@@ -121,5 +120,4 @@ class GPGMeWrapper {
 
   void setSelectedKeyIndex(uint newSelectedKeyIndex);
   uint selectedKeyIndex() const;
-  const QString &getGpgMeVersion();
 };
