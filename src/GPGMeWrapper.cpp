@@ -19,6 +19,7 @@
 #include <gpgme++/data.h>
 #include <gpgme++/decryptionresult.h>
 #include <gpgme++/encryptionresult.h>
+#include <gpgme++/gpgmepp_version.h>
 #include <gpgme++/key.h>
 #include <gpgme++/keylistresult.h>
 
@@ -37,7 +38,7 @@ QVector<QString> getUIDsForKey(GpgME::Key key) {
 /// class functions
 GPGMeWrapper::GPGMeWrapper() {
   loadKeys(false, true, "");
-  m_gpgMeVersion = QString(gpgme_check_version(nullptr));
+  m_gpgMeVersion = QString(GPGMEPP_VERSION_STRING);
 }
 
 GPGMeWrapper::~GPGMeWrapper() { m_keys.clear(); }
