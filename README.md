@@ -1,20 +1,23 @@
 # Kate GPG Plugin
 
-This plugin allows to GPG decrypt and encrypt text files 
+This plugin allows transparent editing of GPG encrypted text files 
 using the [GPGMe library](https://gnupg.org/software/gpgme/index.html) 
 in KDE's text editor KATE.
 
 ![A screenshot of the GPG plugin settings](./kate_gpg_plugin_screenshot.jpg)
 
 ## Features
++ Upon loading a GPG encrypted file the plugin will automatically attempt decryption
+  (asking for passphrase)
 + Upon successful decryption of a file the plugin will auto-select the
-  the used key/fingerprint for eventual re-encryption.
+  the key/fingerprint used for eventual re-encryption
 + Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the 
   same key that was used to decrypt!
-+ Automatic backup files (e.g. with ~ suffix) will NOT be saved unencrypted!
 + Plugin shows all available GPG keys with basic name filtering
-  (auto-selects the most recently created key)
-+ Manual selection of key used for encryption
+  (initially auto-selects the most recently created key)
++ Persistent settings (plugin remembers the last used settings on quit).
++ Manual selection of key used for encryption (plugin settings can remain
+  hidden as long as no encryption key change is necessary)
 + Symmetric encryption possible
 
 ## Prerequisites
