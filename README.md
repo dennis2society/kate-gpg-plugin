@@ -46,8 +46,8 @@ Update: I have taken care that this doesn't happen anymore.
 
 ### Dependencies
 This plugin was developed and built on Manjaro Linux running KDE Plasma. I have
-tested the build in a fresh non-KDE Ubuntu 22.04.3/25.05 LTS and Fedora 42 VM and had 
-to install at least these packages manually:
+tested the build and installation in fresh non-KDE Ubuntu 22.04.3 LTS/25.05 LTS and 
+Fedora 42 VMs and had to install at least these packages manually:
 <ul>
   <li>git</li>
   <li>cmake</li>
@@ -74,7 +74,7 @@ This line should do it for recent Ubuntu based distributions:<br />
   <li>Run CMake in the cloned folder:</li>
   <ul>
     <li>
-      This works for me with both Qt >= 5.15.* and Qt6.
+      This works for me with Qt6: (optional Qt5 build with specified QT_MAJOR_VERSION)
       <br />
       <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release -D QT_MAJOR_VERSION=6</code> (or 5)
     </li>
