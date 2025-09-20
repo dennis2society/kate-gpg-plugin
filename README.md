@@ -9,10 +9,11 @@ in [Kate](https://kate-editor.org).
 ## Features
 + Upon loading a GPG encrypted file the plugin will automatically attempt decryption
   (asking for passphrase)
-+ Upon successful decryption of a file the plugin will auto-select the
++ Upon successful decryption of a file the plugin will auto-select
   the key/fingerprint used for eventual re-encryption
 + Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the 
-  same key that was used to decrypt!
+  same key that was used to decrypt!<br />
+  SaveAs auto-encrypts when selecting .gpg/.asc as file extension
 + Plugin shows all available GPG keys with basic name filtering
   (initially auto-selects the most recently created key)
 + Persistent settings (plugin remembers the last used settings on quit).
