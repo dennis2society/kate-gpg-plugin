@@ -105,6 +105,7 @@ class GPGMeWrapper {
   const GPGOperationResult encryptString(const QString &inputString_,
                                          const QString &fingerprint_,
                                          const QString &recipientMail_,
+                                         const bool useASCII,
                                          bool symmetricEncryption_ = false,
                                          bool showOnlyPrivateKeys_ = false);
 

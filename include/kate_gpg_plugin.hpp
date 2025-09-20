@@ -113,11 +113,6 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   void readPluginSettings();
   void savePluginSettings();
 
-  // Kate does not print debug output to commandline.
-  // So we will simply abuse the document text and replace it
-  // with relevant info for debug purposes!
-  void setDebugTextInDocument(const QString &text_);
-
   // Functions to hook into Kate's save dialog
   // (used for auto-encryption on save)
   void connectToOpenAndSaveDialog(KTextEditor::Document *doc);

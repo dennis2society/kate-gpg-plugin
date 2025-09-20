@@ -262,16 +262,6 @@ void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
   }
 }
 
-void KateGPGPluginView::setDebugTextInDocument(const QString &text_) {
-  QList<KTextEditor::View *> views = m_mainWindow->views();
-  if (views.size() < 1) {
-    pluginMessageBox("Error! No views available...");
-    return;
-  }
-  KTextEditor::View *v = views.at(0);
-  v->document()->setText(text_);
-}
-
 void KateGPGPluginView::decryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
@@ -346,6 +336,7 @@ void KateGPGPluginView::encryptButtonPressed() {
       v->document()->text(), m_selectedKeyIndexEdit->text(),
       m_preferredEmailAddressComboBox->itemText(
           m_preferredEmailAddressComboBox->currentIndex()),
+      m_saveAsASCIICheckbox->isChecked(),
       m_symmetricEncryptioCheckbox->isChecked());
   if (!res.keyFound) {
     pluginMessageBox(
