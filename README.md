@@ -46,8 +46,8 @@ Update: I have taken care that this doesn't happen anymore.
 
 ### Dependencies
 This plugin was developed and built on Manjaro Linux running KDE Plasma. I have
-tested the build in a fresh non-KDE Ubuntu 22.04.3 LTS VM and had to install at least these
-packages manually:
+tested the build in a fresh non-KDE Ubuntu 22.04.3/25.05 LTS and Fedora 42 VM and had 
+to install at least these packages manually:
 <ul>
   <li>git</li>
   <li>cmake</li>
@@ -93,9 +93,9 @@ This line should do it for recent Ubuntu based distributions:<br />
       </li>
       <li>
         <b>Manual installation in Manjaro:</b><br />
-        <code>sudo cp build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code><br />
+        <code>sudo cp build/kate_gpg_plugin.so /usr/lib/qt6/plugins/kf6/ktexteditor/</code><br />
         or if you prefer a symlink:<br />
-        <code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt/plugins/ktexteditor/</code><br />
+        <code>sudo ln -s build/kate_gpg_plugin.so /usr/lib/qt6/plugins/kf6/ktexteditor/</code><br />
       </li>
       <li>
         <b>Manual installation in Ubuntu:</b><br /><code>sudo cp build/kate_gpg_plugin.so /usr/lib/x86_64-linux-gnu/qt5/plugins/ktexteditor/</code><br />
