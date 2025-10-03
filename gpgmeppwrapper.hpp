@@ -66,7 +66,7 @@ class GPGMeWrapper {
    */
   const QVector<GPGKeyDetails> &getKeys() const;
 
-  size_t getNumKeys() const;
+  uint getNumKeys() const;
 
   /**
    * @brief This function reads all available keys and

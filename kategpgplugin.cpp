@@ -58,7 +58,9 @@ void KateGPGPluginView::readPluginSettings() {
     if (m_gpgKeyTable->rowCount() > 0) {
       m_gpgKeyTable->selectRow(m_selectedRowIndex);
     }
-    if (comboIndex <= m_preferredEmailAddressComboBox->count()) {
+    uint numpreferredEmailAddressComboBoxCount =
+        m_preferredEmailAddressComboBox->count();
+    if (comboIndex <= numpreferredEmailAddressComboBoxCount) {
       m_preferredEmailAddressComboBox->setCurrentIndex(
           m_pluginSettings->value("selected_mail_address_index").toUInt());
     }
@@ -432,7 +434,7 @@ void KateGPGPluginView::updateKeyTable() {
   m_gpgKeyTable->resizeColumnsToContents();
   const QVector<GPGKeyDetails> &keyDetailsList = m_gpgWrapper->getKeys();
   uint numRows = 0;
-  for (auto row = 0; row < m_gpgWrapper->getNumKeys(); ++row) {
+  for (uint row = 0; row < m_gpgWrapper->getNumKeys(); ++row) {
     GPGKeyDetails d = keyDetailsList.at(row);
     m_gpgKeyTable->insertRow(m_gpgKeyTable->rowCount());
     makeTableCell(d.fingerPrint(), numRows, 0);

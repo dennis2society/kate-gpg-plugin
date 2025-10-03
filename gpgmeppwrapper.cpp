@@ -101,7 +101,7 @@ void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_,
 
 const QVector<GPGKeyDetails> &GPGMeWrapper::getKeys() const { return m_keys; }
 
-size_t GPGMeWrapper::getNumKeys() const { return m_keys.size(); }
+uint GPGMeWrapper::getNumKeys() const { return m_keys.size(); }
 
 bool GPGMeWrapper::isPreferredKey(const GPGKeyDetails d_,
                                   const QString &mailAddress_) {
@@ -154,7 +154,7 @@ const GPGOperationResult GPGMeWrapper::decryptString(
 #endif
     result.decryptionSuccess = true;
     // result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
-    for (auto i = 0; i < d_res.recipients().size(); ++i) {
+    for (uint i = 0; i < d_res.recipients().size(); ++i) {
       result.keyIDUsedForDecryption +=
           QString::fromUtf8(d_res.recipients().at(i).keyID());
     }
@@ -192,7 +192,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(
   auto ctx = std::unique_ptr<GpgME::Context>(
       GpgME::Context::createForProtocol(protocol));
   ctx->setArmor(true);
-  ctx->setTextMode(true);
+  if (useASCII) ctx->setTextMode(true);
 
   QByteArray bar = inputString_.toUtf8();
   const qsizetype length = bar.length();
