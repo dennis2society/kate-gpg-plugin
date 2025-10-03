@@ -11,6 +11,15 @@ find_package(Gpgmepp REQUIRED)
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
+include(KDECompilerSettings NO_POLICY_SCOPE)
+include(KDECMakeSettings)
+include(KDEClangFormat)
+
+
+# use C++20 like KF6 itself
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 find_package(KF${QT_MAJOR_VERSION}TextEditor ${KF_DEP_VERSION} QUIET REQUIRED)
 

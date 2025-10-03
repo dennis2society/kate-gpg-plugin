@@ -24,9 +24,9 @@
 
 #include <gpgme++/key.h>
 
-#include <gpgkeydetails.hpp>
 #include <QVector>
 #include <QVersionNumber>
+#include <gpgkeydetails.hpp>
 
 struct GPGOperationResult {
   QString resultString;  // de- or encrypted string depending on operation
@@ -51,8 +51,9 @@ class GPGMeWrapper {
    * @param searchPattern_ The mail search pattern.
    * @return A list of matching GpgMe::Key
    */
-  std::vector<GpgME::Key> listKeys(bool showOnlyPrivateKeys_,
-                                   const QString &searchPattern_ = "");
+  std::vector<GpgME::Key> listKeys(
+      bool showOnlyPrivateKeys_,
+      const QString &searchPattern_ = QString::fromUtf8(""));
 
  public:
   GPGMeWrapper();

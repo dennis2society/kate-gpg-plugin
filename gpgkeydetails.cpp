@@ -16,9 +16,9 @@
  */
 
 #include <QDateTime>
+#include <gpgkeydetails.hpp>
 #include <string>
 #include <vector>
-#include <gpgkeydetails.hpp>
 
 GPGKeyDetails::GPGKeyDetails() {}
 
@@ -42,7 +42,9 @@ QString GPGKeyDetails::expiryDate() const { return m_expiryDate; }
 
 const QVector<QString>& GPGKeyDetails::uids() const { return m_uids; }
 
-const QVector<QString>& GPGKeyDetails::mailAdresses() const { return m_mailAddresses; }
+const QVector<QString>& GPGKeyDetails::mailAdresses() const {
+  return m_mailAddresses;
+}
 
 const QVector<QString>& GPGKeyDetails::subkeyIDs() const { return m_subkeyIDs; }
 
@@ -51,21 +53,20 @@ size_t GPGKeyDetails::getNumUIds() const { return m_uids.size(); }
 const QString timestampToQString(const time_t timestamp_) {
   QDateTime dt;
   dt.setSecsSinceEpoch(timestamp_);
-  return dt.toString(QString("yyyy-MM-dd"));
+  return dt.toString(QString::fromUtf8("yyyy-MM-dd"));
 }
 
 void GPGKeyDetails::loadFromGPGMeKey(GpgME::Key key_) {
-  m_fingerPrint = QString(key_.primaryFingerprint());
-  m_keyID = QString(key_.shortKeyID());
+  m_fingerPrint = QString::fromUtf8(key_.primaryFingerprint());
+  m_keyID = QString::fromUtf8(key_.shortKeyID());
   m_keyType = QString::fromStdString(key_.subkey(0).algoName());
   m_keyLength = QString::number(key_.subkey(0).length());
   m_creationDate = QString(timestampToQString(key_.subkey(0).creationTime()));
   m_expiryDate = QString(timestampToQString(key_.subkey(0).expirationTime()));
   const std::vector<GpgME::UserID>& ids = key_.userIDs();
-  for (auto &id : ids) {
-      m_uids.push_back(id.name());
-      m_mailAddresses.push_back(id.email());
-      m_subkeyIDs.push_back(key_.subkey(1).keyID());
+  for (auto& id : ids) {
+    m_uids.push_back(QString::fromUtf8(id.name()));
+    m_mailAddresses.push_back(QString::fromUtf8(id.email()));
+    m_subkeyIDs.push_back(QString::fromUtf8(key_.subkey(1).keyID()));
   }
-
 }

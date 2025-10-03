@@ -58,11 +58,12 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
 
   void onViewChanged(KTextEditor::View *v);
 
- public slots:
-  void setPreferredEmailAddress();  // use your own email address if you want to
-                                    // encrypt to yourself
+ public Q_SLOTS:
+  // void setPreferredEmailAddress();  // use your own email address if you want
+  // to
+  //  encrypt to yourself
   void onTableViewSelection();  // listen to changes in the GPG key list table
-  void onPreferredEmailAddressChanged(QString s_);
+  void onPreferredEmailAddressChanged();
   void onShowOnlyPrivateKeysChanged();
   void onHideExpiredKeysChanged();
   void decryptButtonPressed();
@@ -73,7 +74,7 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   // The top level toolview widget
   std::unique_ptr<QWidget> m_toolview;
 
-  const QString m_settingsName = QString("kategpgpluginsettings");
+  const QString m_settingsName = QString::fromUtf8("kategpgpluginsettings");
 
   GPGMeWrapper *m_gpgWrapper = nullptr;
 
