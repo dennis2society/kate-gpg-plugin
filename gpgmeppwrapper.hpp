@@ -1,19 +1,7 @@
 /*
- * This file is part of kate-gpg-plugin (https://github.com/dennis2society).
- * Copyright (c) 2023 Dennis Luebke.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+    SPDX-FileCopyrightText: 2025 Dennis Lübke <kde@dennis2society.de>
+    SPDX-License-Identifier: LGPL-2.0-or-later
+*/
 
 #pragma once
 
@@ -24,9 +12,9 @@
 
 #include <gpgme++/key.h>
 
-#include <GPGKeyDetails.hpp>
 #include <QVector>
 #include <QVersionNumber>
+#include <gpgkeydetails.hpp>
 
 struct GPGOperationResult {
   QString resultString;  // de- or encrypted string depending on operation
@@ -51,8 +39,9 @@ class GPGMeWrapper {
    * @param searchPattern_ The mail search pattern.
    * @return A list of matching GpgMe::Key
    */
-  std::vector<GpgME::Key> listKeys(bool showOnlyPrivateKeys_,
-                                   const QString &searchPattern_ = "");
+  std::vector<GpgME::Key> listKeys(
+      bool showOnlyPrivateKeys_,
+      const QString &searchPattern_ = QString::fromUtf8(""));
 
  public:
   GPGMeWrapper();
@@ -65,7 +54,7 @@ class GPGMeWrapper {
    */
   const QVector<GPGKeyDetails> &getKeys() const;
 
-  size_t getNumKeys() const;
+  uint getNumKeys() const;
 
   /**
    * @brief This function reads all available keys and

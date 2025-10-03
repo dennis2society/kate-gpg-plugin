@@ -1,23 +1,10 @@
 /*
- * This file is part of kate-gpg-plugin (https://github.com/dennis2society).
- * Copyright (c) 2023 Dennis Luebke.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+    SPDX-FileCopyrightText: 2025 Dennis Lübke <kde@dennis2society.de>
+    SPDX-License-Identifier: LGPL-2.0-or-later
+*/
 
 #pragma once
 
-#include <GPGMeWrapper.hpp>
 #include <KTextEditor/Document>
 #include <KTextEditor/MainWindow>
 #include <KTextEditor/Plugin>
@@ -32,6 +19,7 @@
 #include <QTableWidget>
 #include <QTextBrowser>
 #include <QVBoxLayout>
+#include <gpgmeppwrapper.hpp>
 #include <memory>
 
 // forward declaration
@@ -58,11 +46,9 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
 
   void onViewChanged(KTextEditor::View *v);
 
- public slots:
-  void setPreferredEmailAddress();  // use your own email address if you want to
-                                    // encrypt to yourself
+ public Q_SLOTS:
   void onTableViewSelection();  // listen to changes in the GPG key list table
-  void onPreferredEmailAddressChanged(QString s_);
+  void onPreferredEmailAddressChanged();
   void onShowOnlyPrivateKeysChanged();
   void onHideExpiredKeysChanged();
   void decryptButtonPressed();
@@ -73,7 +59,7 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   // The top level toolview widget
   std::unique_ptr<QWidget> m_toolview;
 
-  const QString m_settingsName = QString("kate_gpg_plugin_settings");
+  const QString m_settingsName = QString::fromUtf8("kategpgpluginsettings");
 
   GPGMeWrapper *m_gpgWrapper = nullptr;
 

@@ -1,19 +1,7 @@
 /*
- * This file is part of kate-gpg-plugin (https://github.com/dennis2society).
- * Copyright (c) 2023 Dennis Luebke.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+    SPDX-FileCopyrightText: 2025 Dennis Lübke <kde@dennis2society.de>
+    SPDX-License-Identifier: LGPL-2.0-or-later
+*/
 
 #include <gpgme++/context.h>
 #include <gpgme++/data.h>
@@ -23,7 +11,7 @@
 #include <gpgme++/key.h>
 #include <gpgme++/keylistresult.h>
 
-#include <GPGMeWrapper.hpp>
+#include <gpgmeppwrapper.hpp>
 #include <vector>
 
 // This is needed to distinguish GPGMe++ versions
@@ -35,13 +23,13 @@
 QVector<QString> getUIDsForKey(GpgME::Key key) {
   QVector<QString> result;
   for (auto &uid : key.userIDs()) {
-    result.append(QString(uid.name()));
+    result.append(QString::fromUtf8(uid.name()));
   }
   return result;
 }
 
 /// class functions
-GPGMeWrapper::GPGMeWrapper() { loadKeys(false, true, ""); }
+GPGMeWrapper::GPGMeWrapper() { loadKeys(false, true, QString::fromUtf8("")); }
 
 GPGMeWrapper::~GPGMeWrapper() { m_keys.clear(); }
 
@@ -83,7 +71,7 @@ void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_,
   const std::vector<GpgME::Key> keys =
       listKeys(showOnlyPrivateKeys_, searchPattern_);
   if (keys.size() == 0) {
-    result.errorMessage.append("Error! No keys found...");
+    result.errorMessage.append(QString::fromUtf8("Error! No keys found..."));
     return;
   }
   for (auto key = keys.begin(); key != keys.end(); ++key) {
@@ -101,7 +89,7 @@ void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_,
 
 const QVector<GPGKeyDetails> &GPGMeWrapper::getKeys() const { return m_keys; }
 
-size_t GPGMeWrapper::getNumKeys() const { return m_keys.size(); }
+uint GPGMeWrapper::getNumKeys() const { return m_keys.size(); }
 
 bool GPGMeWrapper::isPreferredKey(const GPGKeyDetails d_,
                                   const QString &mailAddress_) {
@@ -129,7 +117,7 @@ const GPGOperationResult GPGMeWrapper::decryptString(
   const GpgME::Key key =
       ctx->key(fingerprint_.toUtf8().constData(), err, false);
   if (err) {
-    result.errorMessage.append("Error finding key: " +
+    result.errorMessage.append(QString::fromUtf8("Error finding key: ") +
                                QString::fromStdString(err.asStdString()));
     return result;
   }
@@ -154,9 +142,9 @@ const GPGOperationResult GPGMeWrapper::decryptString(
 #endif
     result.decryptionSuccess = true;
     // result.keyIDUsedForDecryption = d_res.recipient(0).shortKeyID();
-    for (auto i = 0; i < d_res.recipients().size(); ++i) {
+    for (uint i = 0; i < d_res.recipients().size(); ++i) {
       result.keyIDUsedForDecryption +=
-          QString(d_res.recipients().at(i).keyID());
+          QString::fromUtf8(d_res.recipients().at(i).keyID());
     }
 
   } else {
@@ -178,7 +166,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(
   std::vector<GpgME::Key> keys = listKeys(showOnlyPrivateKeys_, recipientMail_);
   // find first key for selected fingerprint and mail address
   for (auto &key : keys) {
-    const QString fingerprint = QString(key.primaryFingerprint());
+    const QString fingerprint = QString::fromUtf8(key.primaryFingerprint());
     if (fingerprint == fingerprint_) {
       result.keyFound = true;
       selectedKeys.push_back(key);
@@ -192,7 +180,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(
   auto ctx = std::unique_ptr<GpgME::Context>(
       GpgME::Context::createForProtocol(protocol));
   ctx->setArmor(true);
-  ctx->setTextMode(true);
+  if (useASCII) ctx->setTextMode(true);
 
   QByteArray bar = inputString_.toUtf8();
   const qsizetype length = bar.length();
@@ -211,8 +199,9 @@ const GPGOperationResult GPGMeWrapper::encryptString(
       result.resultString = QString::fromStdString(ciphertext.toString());
       return result;
     } else {
-      result.resultString.append("ERROR in syymetric encryption: " +
-                                 QString::fromStdString(err.asStdString()));
+      result.resultString.append(
+          QString::fromUtf8("ERROR in syymetric encryption: ") +
+          QString::fromStdString(err.asStdString()));
       return result;
     }
   }
@@ -230,7 +219,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(
     return result;
   } else {
     result.errorMessage.append(
-        "Encryption Failed: " +
+        QString::fromUtf8("Encryption Failed: ") +
         QString::fromStdString(enRes.error().asStdString()));
     return result;
   }
@@ -242,7 +231,7 @@ bool GPGMeWrapper::isEncrypted(const QString &inputString_) {
   GpgME::Data dataIn(bar.constData(), bar.size(),
                      false);  // false = do not copy
   QByteArray outBuffer;
-  GpgME::Data dataOut(outBuffer);
+  GpgME::Data dataOut(outBuffer.constData(), outBuffer.size(), true);
   std::unique_ptr<GpgME::Context> ctx(
       GpgME::Context::createForProtocol(GpgME::OpenPGP));
   if (!ctx) return false;

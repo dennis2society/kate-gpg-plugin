@@ -1,23 +1,10 @@
 /*
- * This file is part of kate-gpg-plugin (https://github.com/dennis2society).
- * Copyright (c) 2023 Dennis Luebke.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+    SPDX-FileCopyrightText: 2025 Dennis Lübke <kde@dennis2society.de>
+    SPDX-License-Identifier: LGPL-2.0-or-later
+*/
 
 #include <qdebug.h>
 
-#include <GPGKeyDetails.hpp>
 #include <KLocalizedString>
 #include <KPluginFactory>
 #include <KTextEditor/Application>
@@ -28,9 +15,10 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QTableWidgetItem>
-#include <kate_gpg_plugin.hpp>
+#include <gpgkeydetails.hpp>
+#include <kategpgplugin.hpp>
 
-K_PLUGIN_FACTORY_WITH_JSON(KateGPGPluginFactory, "kate_gpg_plugin.json",
+K_PLUGIN_FACTORY_WITH_JSON(KateGPGPluginFactory, "kategpgplugin.json",
                            registerPlugin<KateGPGPlugin>();)
 
 QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow) {
@@ -58,7 +46,9 @@ void KateGPGPluginView::readPluginSettings() {
     if (m_gpgKeyTable->rowCount() > 0) {
       m_gpgKeyTable->selectRow(m_selectedRowIndex);
     }
-    if (comboIndex <= m_preferredEmailAddressComboBox->count()) {
+    uint numpreferredEmailAddressComboBoxCount =
+        m_preferredEmailAddressComboBox->count();
+    if (comboIndex <= numpreferredEmailAddressComboBoxCount) {
       m_preferredEmailAddressComboBox->setCurrentIndex(
           m_pluginSettings->value("selected_mail_address_index").toUInt());
     }
@@ -91,34 +81,36 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
     : m_mainWindow(mainwindow) {
   m_gpgWrapper = new GPGMeWrapper();
   m_toolview.reset(m_mainWindow->createToolView(
-      plugin,                         // pointer to plugin
-      "gpgPlugin",                    // just an identifier for the toolview
-      KTextEditor::MainWindow::Left,  // we want to create a toolview on the
-                                      // left side
-      QIcon::fromTheme("security-medium"),
+      plugin,                          // pointer to plugin
+      QString::fromUtf8("gpgPlugin"),  // just an identifier for the toolview
+      KTextEditor::MainWindow::Left,   // we want to create a toolview on the
+                                       // left side
+      QIcon::fromTheme(QString::fromUtf8("security-medium")),
       i18n("GPG Plugin")));  // User visible name of the toolview, i18n means it
                              // will be available for translation
   m_toolview->setMinimumHeight(700);
 
   // BUTTONS!
-  m_gpgDecryptButton = new QPushButton("GPG DEcrypt current document");
-  m_gpgEncryptButton = new QPushButton("GPG ENcrypt current document");
+  m_gpgDecryptButton =
+      new QPushButton(QString::fromUtf8("GPG DEcrypt current document"));
+  m_gpgEncryptButton =
+      new QPushButton(QString::fromUtf8("GPG ENcrypt current document"));
 
   // Lots of initialization and setting parameters for Qt UI stuff
   m_verticalLayout = new QVBoxLayout(m_toolview.get());
-  m_titleLabel = new QLabel("<b>Kate GPG Plugin Settings</b>");
+  m_titleLabel = new QLabel(QString::fromUtf8("<b>GPG Plugin Settings</b>"));
   m_titleLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-  m_preferredEmailAddress = QString("");
-  m_preferredGPGKeyID = QString("Key ID");
-  m_preferredEmailAddressLabel = new QLabel(
-      "A search string used to filter keys by available email addresses");
+  m_preferredEmailAddress = QString::fromUtf8("");
+  m_preferredGPGKeyID = QString::fromUtf8("Key ID");
+  m_preferredEmailAddressLabel = new QLabel(QString::fromUtf8(
+      "A search string used to filter keys by available email addresses"));
   m_preferredEmailAddressLabel->setSizePolicy(QSizePolicy::Expanding,
                                               QSizePolicy::Fixed);
   m_preferredEmailLineEdit = new QLineEdit(m_preferredEmailAddress);
-  m_preferredGPGKeyIDLabel =
-      new QLabel("Selected GPG Key finerprint for encryption");
-  m_EmailAddressSelectLabel =
-      new QLabel("<b>To: Email address used for encryption</b>");
+  m_preferredGPGKeyIDLabel = new QLabel(
+      QString::fromUtf8("Selected GPG Key finerprint for encryption"));
+  m_EmailAddressSelectLabel = new QLabel(
+      QString::fromUtf8("<b>To: Email address used for encryption</b>"));
   m_preferredGPGKeyIDLabel->setSizePolicy(QSizePolicy::Maximum,
                                           QSizePolicy::Fixed);
   m_EmailAddressSelectLabel->setSizePolicy(QSizePolicy::Maximum,
@@ -128,25 +120,28 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 
   m_selectedKeyIndexEdit = new QLineEdit(m_preferredGPGKeyID);
   m_selectedKeyIndexEdit->setReadOnly(true);
-  m_preferredEmailAddressComboBox->setToolTip(
+  m_preferredEmailAddressComboBox->setToolTip(QString::fromUtf8(
       "Select an email address to which to encrypt.\n"
       "Only mail addresses associated with your currently selected\n"
-      "key fingerprint are available.");
-  m_selectedKeyIndexEdit->setToolTip(
+      "key fingerprint are available."));
+  m_selectedKeyIndexEdit->setToolTip(QString::fromUtf8(
       "This is your currently selected GPG key fingerprint that will be used "
-      "for encryption.");
+      "for encryption."));
 
-  m_saveAsASCIICheckbox = new QCheckBox("Save as ASCII encoded (.asc/.gpg)");
+  m_saveAsASCIICheckbox =
+      new QCheckBox(QString::fromUtf8("Save as ASCII encoded (.asc/.gpg)"));
   m_saveAsASCIICheckbox->setChecked(true);
 
-  m_symmetricEncryptioCheckbox = new QCheckBox("Enable symmetric encryption");
+  m_symmetricEncryptioCheckbox =
+      new QCheckBox(QString::fromUtf8("Enable symmetric encryption"));
   m_symmetricEncryptioCheckbox->setChecked(false);
 
-  m_showOnlyPrivateKeysCheckbox =
-      new QCheckBox("Show only keys for which a private key is available");
+  m_showOnlyPrivateKeysCheckbox = new QCheckBox(
+      QString::fromUtf8("Show only keys for which a private key is available"));
   m_showOnlyPrivateKeysCheckbox->setChecked(false);
 
-  m_hideExpiredKeysCheckbox = new QCheckBox("Hide Expired Keys");
+  m_hideExpiredKeysCheckbox =
+      new QCheckBox(QString::fromUtf8("Hide Expired Keys"));
   m_hideExpiredKeysCheckbox->setChecked(true);
 
   m_gpgKeyTable =
@@ -205,27 +200,27 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   readPluginSettings();
 }
 
-void KateGPGPluginView::onPreferredEmailAddressChanged(QString s_) {
-  emit m_gpgKeyTable->itemSelectionChanged();
+void KateGPGPluginView::onPreferredEmailAddressChanged() {
+  m_gpgKeyTable->itemSelectionChanged();
   m_preferredEmailAddress = m_preferredEmailLineEdit->text();
   updateKeyTable();
 }
 
 void KateGPGPluginView::onShowOnlyPrivateKeysChanged() {
-  emit m_gpgKeyTable->itemSelectionChanged();
+  m_gpgKeyTable->itemSelectionChanged();
   m_preferredEmailAddress = m_preferredEmailLineEdit->text();
   updateKeyTable();
 }
 
 void KateGPGPluginView::onHideExpiredKeysChanged() {
-  emit m_gpgKeyTable->itemSelectionChanged();
+  m_gpgKeyTable->itemSelectionChanged();
   m_preferredEmailAddress = m_preferredEmailLineEdit->text();
   updateKeyTable();
 }
 
 int pluginMessageBox(const QString msg_) {
   QMessageBox mb;
-  mb.setText("GPG Plugin");
+  mb.setText(QString::fromUtf8("GPG Plugin"));
   mb.setInformativeText(msg_);
   mb.setDefaultButton(QMessageBox::Ok);
   return mb.exec();
@@ -238,8 +233,8 @@ void KateGPGPluginView::connectToOpenAndSaveDialog(KTextEditor::Document *doc) {
 }
 
 void KateGPGPluginView::onDocumentOpened(KTextEditor::Document *doc) {
-  if ((doc->url().fileName().toLower().endsWith(".gpg") ||
-       doc->url().fileName().toLower().endsWith(".asc")) &&
+  if ((doc->url().fileName().toLower().endsWith(QString::fromUtf8(".gpg")) ||
+       doc->url().fileName().toLower().endsWith(QString::fromUtf8(".asc"))) &&
       m_gpgWrapper->isEncrypted(doc->text())) {
     decryptButtonPressed();
   }
@@ -247,14 +242,14 @@ void KateGPGPluginView::onDocumentOpened(KTextEditor::Document *doc) {
 
 void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
   // Called right before save
-  if (doc->url().fileName().toLower().endsWith(".gpg") ||
-      doc->url().fileName().toLower().endsWith(".asc")) {
+  if (doc->url().fileName().toLower().endsWith(QString::fromUtf8(".gpg")) ||
+      doc->url().fileName().toLower().endsWith(QString::fromUtf8(".asc"))) {
     QList<KTextEditor::View *> views = m_mainWindow->views();
     KTextEditor::View *v = views.at(0);
     if (m_gpgWrapper->isEncrypted(v->document()->text())) {
-      pluginMessageBox(
+      pluginMessageBox(QString::fromUtf8(
           "Attempted double encryption detected!\nEncrypting more "
-          "than once is disabled for now...");
+          "than once is disabled for now..."));
       return;
     }
     v->document()->setText(v->document()->text());
@@ -265,30 +260,33 @@ void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc) {
 void KateGPGPluginView::decryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    pluginMessageBox("Error! No views available...");
+    pluginMessageBox(QString::fromUtf8("Error! No views available..."));
     return;
   }
   KTextEditor::View *v = views.at(0);
   if (!v || !v->document() || v->document()->isEmpty()) {
-    pluginMessageBox("Error Decrypting Text! Document is empty..");
+    pluginMessageBox(
+        QString::fromUtf8("Error Decrypting Text! Document is empty.."));
     return;
   }
   if (m_selectedKeyIndexEdit->text().isEmpty()) {
-    pluginMessageBox("Error Decrypting Text! No fingerprint selected...");
+    pluginMessageBox(
+        QString::fromUtf8("Error Decrypting Text! No fingerprint selected..."));
     return;
   }
   GPGOperationResult res = m_gpgWrapper->decryptString(
       v->document()->text(), m_selectedKeyIndexEdit->text());
   if (!res.keyFound) {
     pluginMessageBox(
-        "Error Decrypting Text!ņ"
-        "No matching fingerprint found!\n"
-        "Or this is not a GPG "
-        "encrypted text...");
+        QString::fromUtf8("Error Decrypting Text!ņ"
+                          "No matching fingerprint found!\n"
+                          "Or this is not a GPG "
+                          "encrypted text..."));
     return;
   }
   if (!res.decryptionSuccess) {
-    pluginMessageBox("Error Decrypting Text!\n" + res.errorMessage);
+    pluginMessageBox(QString::fromUtf8("Error Decrypting Text!\n") +
+                     res.errorMessage);
     return;
   }
   v->document()->setText(res.resultString);
@@ -308,27 +306,31 @@ void KateGPGPluginView::decryptButtonPressed() {
 void KateGPGPluginView::encryptButtonPressed() {
   QList<KTextEditor::View *> views = m_mainWindow->views();
   if (views.size() < 1) {
-    pluginMessageBox("Error! No views available...");
+    pluginMessageBox(QString::fromUtf8("Error! No views available..."));
     return;
   }
   KTextEditor::View *v = views.at(0);
 
   if (!v || !v->document()) {
-    pluginMessageBox("Error Encrypting Text!\nNo document available...");
+    pluginMessageBox(
+        QString::fromUtf8("Error Encrypting Text!\nNo document available..."));
     return;
   }
   if (v->document()->text().isEmpty()) {
-    pluginMessageBox("Error Encrypting Text!\nDocument is empty..");
+    pluginMessageBox(
+        QString::fromUtf8("Error Encrypting Text!\nDocument is empty.."));
     return;
   }
   if (m_selectedKeyIndexEdit->text().isEmpty()) {
-    pluginMessageBox("Error Encrypting Text!\nNo fingerprint selected...");
+    pluginMessageBox(QString::fromUtf8(
+        "Error Encrypting Text!\nNo fingerprint selected..."));
     return;
   }
-  if (v->document()->text().startsWith("-----BEGIN PGP MESSAGE-----")) {
-    pluginMessageBox(
+  if (v->document()->text().startsWith(
+          QString::fromUtf8("-----BEGIN PGP MESSAGE-----"))) {
+    pluginMessageBox(QString::fromUtf8(
         "Attempted double encryption detected!\nEncrypting twice "
-        "is disabled for now...");
+        "is disabled for now..."));
     return;
   }
 
@@ -340,12 +342,14 @@ void KateGPGPluginView::encryptButtonPressed() {
       m_symmetricEncryptioCheckbox->isChecked());
   if (!res.keyFound) {
     pluginMessageBox(
-        "Error Decrypting Text!\nNo Matching Fingerprint found...\n" +
+        QString::fromUtf8(
+            "Error Decrypting Text!\nNo Matching Fingerprint found...\n") +
         res.errorMessage);
     return;
   }
   if (!res.decryptionSuccess) {
-    pluginMessageBox("Error Encrypting Text!" + res.errorMessage);
+    pluginMessageBox(QString::fromUtf8("Error Encrypting Text!") +
+                     res.errorMessage);
     return;
   }
   v->document()->setText(res.resultString);
@@ -391,11 +395,11 @@ QString concatenateEmailAddressesToString(const QVector<QString> uids_,
                                           const QVector<QString> mailAddresses_,
                                           const QVector<QString> subkeyIDs_) {
   assert(uids_.size() == mailAddresses_.size());
-  QString out = "";
+  QString out = QString::fromUtf8("");
   for (auto i = 0; i < mailAddresses_.size(); ++i) {
-    out += uids_.at(i) + " <";
-    out += mailAddresses_.at(i) + "> ";
-    out += "(" + subkeyIDs_.at(i) + ")\n";
+    out += uids_.at(i) + QString::fromUtf8(" <");
+    out += mailAddresses_.at(i) + QString::fromUtf8("> ");
+    out += QString::fromUtf8("(") + subkeyIDs_.at(i) + QString::fromUtf8(")\n");
   }
   return out;
 }
@@ -409,16 +413,16 @@ void KateGPGPluginView::makeTableCell(const QString cellValue, uint row,
 void KateGPGPluginView::updateKeyTable() {
   m_gpgKeyTable->setSortingEnabled(false);
   m_gpgKeyTable->setRowCount(0);
-  m_gpgKeyTableHeader << "Key Fingerprint"
-                      << "Creation Date"
-                      << "Expiry Date"
-                      << "Key Length"
-                      << "User IDs";
+  m_gpgKeyTableHeader << QString::fromUtf8("Key Fingerprint")
+                      << QString::fromUtf8("Creation Date")
+                      << QString::fromUtf8("Expiry Date")
+                      << QString::fromUtf8("Key Length")
+                      << QString::fromUtf8("User IDs");
   m_gpgKeyTable->setHorizontalHeaderLabels(m_gpgKeyTableHeader);
   m_gpgKeyTable->resizeColumnsToContents();
   const QVector<GPGKeyDetails> &keyDetailsList = m_gpgWrapper->getKeys();
   uint numRows = 0;
-  for (auto row = 0; row < m_gpgWrapper->getNumKeys(); ++row) {
+  for (uint row = 0; row < m_gpgWrapper->getNumKeys(); ++row) {
     GPGKeyDetails d = keyDetailsList.at(row);
     m_gpgKeyTable->insertRow(m_gpgKeyTable->rowCount());
     makeTableCell(d.fingerPrint(), numRows, 0);
@@ -446,4 +450,4 @@ void KateGPGPluginView::updateKeyTable() {
   m_gpgKeyTable->resizeRowsToContents();
 }
 
-#include "kate_gpg_plugin.moc"
+#include "kategpgplugin.moc"
