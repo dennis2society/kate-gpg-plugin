@@ -24,7 +24,7 @@
 
 #include <gpgme++/key.h>
 
-#include <GPGKeyDetails.hpp>
+#include <gpgkeydetails.hpp>
 #include <QVector>
 #include <QVersionNumber>
 

@@ -23,7 +23,7 @@
 #include <gpgme++/key.h>
 #include <gpgme++/keylistresult.h>
 
-#include <GPGMeWrapper.hpp>
+#include <gpgmeppwrapper.hpp>
 #include <vector>
 
 // This is needed to distinguish GPGMe++ versions

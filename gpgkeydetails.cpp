@@ -18,7 +18,7 @@
 #include <QDateTime>
 #include <string>
 #include <vector>
-#include <GPGKeyDetails.hpp>
+#include <gpgkeydetails.hpp>
 
 GPGKeyDetails::GPGKeyDetails() {}
 

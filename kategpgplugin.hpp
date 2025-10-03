@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <GPGMeWrapper.hpp>
 #include <KTextEditor/Document>
 #include <KTextEditor/MainWindow>
 #include <KTextEditor/Plugin>
@@ -32,6 +31,7 @@
 #include <QTableWidget>
 #include <QTextBrowser>
 #include <QVBoxLayout>
+#include <gpgmeppwrapper.hpp>
 #include <memory>
 
 // forward declaration
@@ -73,7 +73,7 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   // The top level toolview widget
   std::unique_ptr<QWidget> m_toolview;
 
-  const QString m_settingsName = QString("kate_gpg_plugin_settings");
+  const QString m_settingsName = QString("kategpgpluginsettings");
 
   GPGMeWrapper *m_gpgWrapper = nullptr;
 

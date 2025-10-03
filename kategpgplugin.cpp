@@ -17,7 +17,6 @@
 
 #include <qdebug.h>
 
-#include <GPGKeyDetails.hpp>
 #include <KLocalizedString>
 #include <KPluginFactory>
 #include <KTextEditor/Application>
@@ -28,9 +27,10 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QTableWidgetItem>
-#include <kate_gpg_plugin.hpp>
+#include <gpgkeydetails.hpp>
+#include <kategpgplugin.hpp>
 
-K_PLUGIN_FACTORY_WITH_JSON(KateGPGPluginFactory, "kate_gpg_plugin.json",
+K_PLUGIN_FACTORY_WITH_JSON(KateGPGPluginFactory, "kategpgplugin.json",
                            registerPlugin<KateGPGPlugin>();)
 
 QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow) {
@@ -106,7 +106,7 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
 
   // Lots of initialization and setting parameters for Qt UI stuff
   m_verticalLayout = new QVBoxLayout(m_toolview.get());
-  m_titleLabel = new QLabel("<b>Kate GPG Plugin Settings</b>");
+  m_titleLabel = new QLabel("<b>GPG Plugin Settings</b>");
   m_titleLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
   m_preferredEmailAddress = QString("");
   m_preferredGPGKeyID = QString("Key ID");
@@ -446,4 +446,4 @@ void KateGPGPluginView::updateKeyTable() {
   m_gpgKeyTable->resizeRowsToContents();
 }
 
-#include "kate_gpg_plugin.moc"
+#include "kategpgplugin.moc"
