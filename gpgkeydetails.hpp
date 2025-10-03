@@ -1,19 +1,7 @@
 /*
- * This file is part of kate-gpg-plugin (https://github.com/dennis2society).
- * Copyright (c) 2023 Dennis Luebke.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+    SPDX-FileCopyrightText: 2025 Dennis Lübke <kde@dennis2society.de>
+    SPDX-License-Identifier: LGPL-2.0-or-later
+*/
 
 #pragma once
 
@@ -21,39 +9,43 @@
  * @brief This class contains the details for a GPG key
  **/
 
-#include <QString>
-#include <QVector>
 #include <gpgme++/key.h>
 
-class GPGKeyDetails
-{
-public:
-    GPGKeyDetails();
+#include <QString>
+#include <QVector>
 
-    ~GPGKeyDetails();
+class GPGKeyDetails {
+ public:
+  GPGKeyDetails();
 
-    QString fingerPrint() const;
-    QString keyID() const;
-    QString keyType() const;
-    QString keyLength() const;
-    QString creationDate() const;
-    QString expiryDate() const;
-    const QVector<QString> &uids() const; // this returns a list of all names per key
-    const QVector<QString> &mailAdresses() const; // this returns a list of all email addresses associated with this key
-    const QVector<QString> &subkeyIDs() const; // this returns a list of all "IDs" per key
+  ~GPGKeyDetails();
 
-    size_t getNumUIds() const;
+  QString fingerPrint() const;
+  QString keyID() const;
+  QString keyType() const;
+  QString keyLength() const;
+  QString creationDate() const;
+  QString expiryDate() const;
+  const QVector<QString> &uids()
+      const;  // this returns a list of all names per key
+  const QVector<QString> &mailAdresses()
+      const;  // this returns a list of all email addresses associated with this
+              // key
+  const QVector<QString> &subkeyIDs()
+      const;  // this returns a list of all "IDs" per key
 
-    void loadFromGPGMeKey(GpgME::Key key_);
+  size_t getNumUIds() const;
 
-private:
-    QString m_fingerPrint;
-    QString m_keyID;
-    QString m_keyType;
-    QString m_keyLength;
-    QString m_creationDate;
-    QString m_expiryDate;
-    QVector<QString> m_uids;
-    QVector<QString> m_mailAddresses;
-    QVector<QString> m_subkeyIDs;
+  void loadFromGPGMeKey(GpgME::Key key_);
+
+ private:
+  QString m_fingerPrint;
+  QString m_keyID;
+  QString m_keyType;
+  QString m_keyLength;
+  QString m_creationDate;
+  QString m_expiryDate;
+  QVector<QString> m_uids;
+  QVector<QString> m_mailAddresses;
+  QVector<QString> m_subkeyIDs;
 };
