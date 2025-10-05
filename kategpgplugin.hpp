@@ -26,84 +26,84 @@
 // forward declaration
 class GPGKeyDetails;
 
-class KateGPGPlugin : public KTextEditor::Plugin {
-  Q_OBJECT
- public:
-  explicit KateGPGPlugin(QObject *parent,
-                         const QList<QVariant> & = QList<QVariant>())
-      : KTextEditor::Plugin(parent) {}
+class KateGPGPlugin : public KTextEditor::Plugin
+{
+    Q_OBJECT
+public:
+    explicit KateGPGPlugin(QObject *parent, const QList<QVariant> & = QList<QVariant>())
+        : KTextEditor::Plugin(parent)
+    {
+    }
 
-  QObject *createView(KTextEditor::MainWindow *mainWindow) override;
+    QObject *createView(KTextEditor::MainWindow *mainWindow) override;
 };
 
-class KateGPGPluginView : public QObject, public KXMLGUIClient {
-  Q_OBJECT
+class KateGPGPluginView : public QObject, public KXMLGUIClient
+{
+    Q_OBJECT
 
- public:
-  explicit KateGPGPluginView(KateGPGPlugin *plugin,
-                             KTextEditor::MainWindow *mainwindow);
+public:
+    explicit KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWindow *mainwindow);
 
-  ~KateGPGPluginView();
+    ~KateGPGPluginView();
 
-  void onViewChanged(KTextEditor::View *v);
+    void onViewChanged(KTextEditor::View *v);
 
- public Q_SLOTS:
-  void onTableViewSelection();  // listen to changes in the GPG key list table
-  void onPreferredEmailAddressChanged();
-  void onShowOnlyPrivateKeysChanged();
-  void onHideExpiredKeysChanged();
-  void decryptButtonPressed();
-  void encryptButtonPressed();
+public Q_SLOTS:
+    void onTableViewSelection(); // listen to changes in the GPG key list table
+    void onPreferredEmailAddressChanged();
+    void onShowOnlyPrivateKeysChanged();
+    void onHideExpiredKeysChanged();
+    void decryptButtonPressed();
+    void encryptButtonPressed();
 
- private:
-  KTextEditor::MainWindow *m_mainWindow = nullptr;
-  // The top level toolview widget
-  std::unique_ptr<QWidget> m_toolview;
+private:
+    KTextEditor::MainWindow *m_mainWindow = nullptr;
+    // The top level toolview widget
+    std::unique_ptr<QWidget> m_toolview;
 
-  const QString m_pluginConfigName = QString::fromUtf8("kategpgplugin_config");
-  const QString m_pluginConfigGroupName =
-      QString::fromUtf8("kategpgpluginconfiggroup");
-  GPGMeWrapper *m_gpgWrapper = nullptr;
+    const QString m_pluginConfigName = QString::fromUtf8("kategpgplugin_config");
+    const QString m_pluginConfigGroupName = QString::fromUtf8("kategpgpluginconfiggroup");
+    GPGMeWrapper *m_gpgWrapper = nullptr;
 
-  int m_selectedRowIndex;
+    int m_selectedRowIndex;
 
-  QPushButton *m_gpgDecryptButton = nullptr;
-  QPushButton *m_gpgEncryptButton = nullptr;
+    QPushButton *m_gpgDecryptButton = nullptr;
+    QPushButton *m_gpgEncryptButton = nullptr;
 
-  QVBoxLayout *m_verticalLayout;
-  QLabel *m_titleLabel;
-  QLabel *m_preferredEmailAddressLabel;
-  QLabel *m_preferredGPGKeyIDLabel;
-  QString m_title;
-  QString m_preferredEmailAddress;
-  QLineEdit *m_preferredEmailLineEdit;
-  QString m_preferredGPGKeyID;
-  QLabel *m_EmailAddressSelectLabel;
-  QComboBox *m_preferredEmailAddressComboBox;
-  QLineEdit *m_selectedKeyIndexEdit;
-  QCheckBox *m_saveAsASCIICheckbox;
-  QCheckBox *m_symmetricEncryptioCheckbox;
-  QCheckBox *m_showOnlyPrivateKeysCheckbox;
-  QCheckBox *m_hideExpiredKeysCheckbox;
-  QTableWidget *m_gpgKeyTable;
-  QStringList m_gpgKeyTableHeader;
+    QVBoxLayout *m_verticalLayout;
+    QLabel *m_titleLabel;
+    QLabel *m_preferredEmailAddressLabel;
+    QLabel *m_preferredGPGKeyIDLabel;
+    QString m_title;
+    QString m_preferredEmailAddress;
+    QLineEdit *m_preferredEmailLineEdit;
+    QString m_preferredGPGKeyID;
+    QLabel *m_EmailAddressSelectLabel;
+    QComboBox *m_preferredEmailAddressComboBox;
+    QLineEdit *m_selectedKeyIndexEdit;
+    QCheckBox *m_saveAsASCIICheckbox;
+    QCheckBox *m_symmetricEncryptioCheckbox;
+    QCheckBox *m_showOnlyPrivateKeysCheckbox;
+    QCheckBox *m_hideExpiredKeysCheckbox;
+    QTableWidget *m_gpgKeyTable;
+    QStringList m_gpgKeyTableHeader;
 
-  KConfig *m_pluginConfig;
+    KConfig *m_pluginConfig;
 
-  // private functions
-  void updateKeyTable();
+    // private functions
+    void updateKeyTable();
 
-  const QTableWidgetItem convertKeyDetailsToTableItem(
-      const GPGKeyDetails &keyDetails_);
+    const QTableWidgetItem convertKeyDetailsToTableItem(const GPGKeyDetails &keyDetails_);
 
-  void makeTableCell(const QString cellValue, uint row, uint col);
+    void makeTableCell(const QString cellValue, uint row, uint col);
 
-  void readPluginSettings();
-  void savePluginSettings();
+    void readPluginSettings();
+    void savePluginSettings();
 
-  // Functions to hook into Kate's save dialog
-  // (used for auto-encryption on save)
-  void connectToOpenAndSaveDialog(KTextEditor::Document *doc);
-  void onDocumentWillSave(KTextEditor::Document *doc);
-  void onDocumentOpened(KTextEditor::Document *doc);
+    // Functions to hook into Kate's save dialog
+    // (used for auto-encryption on save)
+    void connectToOpenAndSaveDialog(KTextEditor::Document *doc);
+    void onDocumentWillSave(KTextEditor::Document *doc);
+    void onDocumentOpened(KTextEditor::Document *doc);
 };
