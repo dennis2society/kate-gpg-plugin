@@ -5,6 +5,7 @@
 
 #include <qdebug.h>
 
+#include <KConfigGroup>
 #include <KLocalizedString>
 #include <KPluginFactory>
 #include <KTextEditor/Application>
@@ -28,21 +29,18 @@ QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow) {
 KateGPGPluginView::~KateGPGPluginView() { savePluginSettings(); }
 
 void KateGPGPluginView::readPluginSettings() {
-  if (m_pluginSettings != nullptr) {
-    m_pluginSettings->beginGroup("default");
-    uint comboIndex =
-        m_pluginSettings->value("selected_mail_address_index").toUInt();
-    m_saveAsASCIICheckbox->setChecked(
-        m_pluginSettings->value("use_ASCII_armor").toBool());
+  if (m_pluginConfig != nullptr) {
+    KConfigGroup group = m_pluginConfig->group(m_pluginConfigGroupName);
+    uint comboIndex = group.readEntry("selected_mail_address_index", 0);
+    m_saveAsASCIICheckbox->setChecked(group.readEntry("use_ASCII_armor", true));
     m_symmetricEncryptioCheckbox->setChecked(
-        m_pluginSettings->value("use_symmetric_encryption").toBool());
+        group.readEntry("use_symmetric_encryption", false));
     m_showOnlyPrivateKeysCheckbox->setChecked(
-        m_pluginSettings->value("show_only_private_keys").toBool());
+        group.readEntry("show_only_private_keys", true));
     m_hideExpiredKeysCheckbox->setChecked(
-        m_pluginSettings->value("hide_expired_secret_keys").toBool());
-    m_preferredEmailLineEdit->setText(
-        m_pluginSettings->value("search_string").toString());
-    m_selectedRowIndex = m_pluginSettings->value("selected_key_index").toUInt();
+        group.readEntry("hide_expired_secret_keys", true));
+    m_preferredEmailLineEdit->setText(group.readEntry("search_string", ""));
+    m_selectedRowIndex = group.readEntry("selected_key_index", 0);
     if (m_gpgKeyTable->rowCount() > 0) {
       m_gpgKeyTable->selectRow(m_selectedRowIndex);
     }
@@ -50,29 +48,26 @@ void KateGPGPluginView::readPluginSettings() {
         m_preferredEmailAddressComboBox->count();
     if (comboIndex <= numpreferredEmailAddressComboBoxCount) {
       m_preferredEmailAddressComboBox->setCurrentIndex(
-          m_pluginSettings->value("selected_mail_address_index").toUInt());
+          group.readEntry("selected_mail_address_index", 0));
     }
-    m_pluginSettings->endGroup();
   }
 }
 
 void KateGPGPluginView::savePluginSettings() {
-  if (m_pluginSettings != nullptr) {
-    m_pluginSettings->beginGroup("default");
-    m_pluginSettings->setValue("search_string",
-                               m_preferredEmailLineEdit->text());
-    m_pluginSettings->setValue("selected_key_index", m_selectedRowIndex);
-    m_pluginSettings->setValue("selected_mail_address_index",
-                               m_preferredEmailAddressComboBox->currentIndex());
-    m_pluginSettings->setValue("use_ASCII_armor",
-                               m_saveAsASCIICheckbox->isChecked());
-    m_pluginSettings->setValue("use_symmetric_encryption",
-                               m_symmetricEncryptioCheckbox->isChecked());
-    m_pluginSettings->setValue("show_only_private_keys",
-                               m_showOnlyPrivateKeysCheckbox->isChecked());
-    m_pluginSettings->setValue("hide_expired_secret_keys",
-                               m_hideExpiredKeysCheckbox->isChecked());
-    m_pluginSettings->endGroup();
+  if (m_pluginConfig != nullptr) {
+    KConfigGroup group = m_pluginConfig->group(m_pluginConfigGroupName);
+    group.writeEntry("search_string", m_preferredEmailLineEdit->text());
+    group.writeEntry("selected_key_index", m_selectedRowIndex);
+    group.writeEntry("selected_mail_address_index",
+                     m_preferredEmailAddressComboBox->currentIndex());
+    group.writeEntry("use_ASCII_armor", m_saveAsASCIICheckbox->isChecked());
+    group.writeEntry("use_symmetric_encryption",
+                     m_symmetricEncryptioCheckbox->isChecked());
+    group.writeEntry("show_only_private_keys",
+                     m_showOnlyPrivateKeysCheckbox->isChecked());
+    group.writeEntry("hide_expired_secret_keys",
+                     m_hideExpiredKeysCheckbox->isChecked());
+    m_pluginConfig->sync();
   }
 }
 
@@ -91,14 +86,12 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   m_toolview->setMinimumHeight(700);
 
   // BUTTONS!
-  m_gpgDecryptButton =
-      new QPushButton(QString::fromUtf8("GPG DEcrypt current document"));
-  m_gpgEncryptButton =
-      new QPushButton(QString::fromUtf8("GPG ENcrypt current document"));
+  m_gpgDecryptButton = new QPushButton(i18n("GPG DEcrypt current document"));
+  m_gpgEncryptButton = new QPushButton(i18n("GPG ENcrypt current document"));
 
   // Lots of initialization and setting parameters for Qt UI stuff
   m_verticalLayout = new QVBoxLayout(m_toolview.get());
-  m_titleLabel = new QLabel(QString::fromUtf8("<b>GPG Plugin Settings</b>"));
+  m_titleLabel = new QLabel(i18n("<b>GPG Plugin Settings</b>"));
   m_titleLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
   m_preferredEmailAddress = QString::fromUtf8("");
   m_preferredGPGKeyID = QString::fromUtf8("Key ID");
@@ -196,7 +189,8 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin,
   updateKeyTable();
 
   // restore plugin settings
-  m_pluginSettings = new QSettings(m_settingsName);
+  // m_pluginSettings = new QSettings(m_settingsName);
+  m_pluginConfig = new KConfig(m_pluginConfigName);
   readPluginSettings();
 }
 

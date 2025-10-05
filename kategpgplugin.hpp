@@ -15,7 +15,8 @@
 #include <QLineEdit>
 #include <QObject>
 #include <QPushButton>
-#include <QSettings>
+// #include <QSettings>
+#include <KConfig>
 #include <QTableWidget>
 #include <QTextBrowser>
 #include <QVBoxLayout>
@@ -59,8 +60,9 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   // The top level toolview widget
   std::unique_ptr<QWidget> m_toolview;
 
-  const QString m_settingsName = QString::fromUtf8("kategpgpluginsettings");
-
+  const QString m_pluginConfigName = QString::fromUtf8("kategpgplugin_config");
+  const QString m_pluginConfigGroupName =
+      QString::fromUtf8("kategpgpluginconfiggroup");
   GPGMeWrapper *m_gpgWrapper = nullptr;
 
   int m_selectedRowIndex;
@@ -86,7 +88,7 @@ class KateGPGPluginView : public QObject, public KXMLGUIClient {
   QTableWidget *m_gpgKeyTable;
   QStringList m_gpgKeyTableHeader;
 
-  QSettings *m_pluginSettings;
+  KConfig *m_pluginConfig;
 
   // private functions
   void updateKeyTable();
