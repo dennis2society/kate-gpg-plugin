@@ -28,10 +28,13 @@ QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow)
 
 KateGPGPluginView::~KateGPGPluginView()
 {
-    savePluginSettings();
+    savePluginConfig();
+    if (m_pluginConfig != nullptr) {
+        delete m_pluginConfig;
+    }
 }
 
-void KateGPGPluginView::readPluginSettings()
+void KateGPGPluginView::readPluginConfig()
 {
     if (m_pluginConfig != nullptr) {
         KConfigGroup group = m_pluginConfig->group(m_pluginConfigGroupName);
@@ -52,7 +55,7 @@ void KateGPGPluginView::readPluginSettings()
     }
 }
 
-void KateGPGPluginView::savePluginSettings()
+void KateGPGPluginView::savePluginConfig()
 {
     if (m_pluginConfig != nullptr) {
         KConfigGroup group = m_pluginConfig->group(m_pluginConfigGroupName);
@@ -165,10 +168,9 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWin
     });
     updateKeyTable();
 
-    // restore plugin settings
-    // m_pluginSettings = new QSettings(m_settingsName);
+    // restore plugin config
     m_pluginConfig = new KConfig(m_pluginConfigName);
-    readPluginSettings();
+    readPluginConfig();
 }
 
 void KateGPGPluginView::onPreferredEmailAddressChanged()

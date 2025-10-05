@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <KConfig>
 #include <KTextEditor/Document>
 #include <KTextEditor/MainWindow>
 #include <KTextEditor/Plugin>
@@ -15,8 +16,6 @@
 #include <QLineEdit>
 #include <QObject>
 #include <QPushButton>
-// #include <QSettings>
-#include <KConfig>
 #include <QTableWidget>
 #include <QTextBrowser>
 #include <QVBoxLayout>
@@ -98,8 +97,8 @@ private:
 
     void makeTableCell(const QString cellValue, uint row, uint col);
 
-    void readPluginSettings();
-    void savePluginSettings();
+    void readPluginConfig();
+    void savePluginConfig();
 
     // Functions to hook into Kate's save dialog
     // (used for auto-encryption on save)
