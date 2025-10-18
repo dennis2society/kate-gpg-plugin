@@ -105,4 +105,7 @@ private:
     void connectToOpenAndSaveDialog(KTextEditor::Document *doc);
     void onDocumentWillSave(KTextEditor::Document *doc);
     void onDocumentOpened(KTextEditor::Document *doc);
+
+    // Function to generate translatable Kate-conform error/warning messages
+    const QVariantMap generateMessage(const QString translatebleMessage, const QString messageType);
 };

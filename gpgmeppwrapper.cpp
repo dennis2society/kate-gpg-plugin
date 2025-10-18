@@ -11,6 +11,7 @@
 #include <gpgme++/key.h>
 #include <gpgme++/keylistresult.h>
 
+#include <KLocalizedString>
 #include <gpgmeppwrapper.hpp>
 #include <vector>
 
@@ -77,7 +78,7 @@ void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_, co
     GPGOperationResult result;
     const std::vector<GpgME::Key> keys = listKeys(showOnlyPrivateKeys_, searchPattern_);
     if (keys.size() == 0) {
-        result.errorMessage.append(QString::fromUtf8("Error! No keys found..."));
+        result.errorMessage.append(i18n("Error! No keys found..."));
         return;
     }
     for (auto key = keys.begin(); key != keys.end(); ++key) {
@@ -127,7 +128,7 @@ const GPGOperationResult GPGMeWrapper::decryptString(const QString &inputString_
     // find correct key
     const GpgME::Key key = ctx->key(fingerprint_.toUtf8().constData(), err, false);
     if (err) {
-        result.errorMessage.append(QString::fromUtf8("Error finding key: ") + QString::fromStdString(err.asStdString()));
+        result.errorMessage.append(i18n("Error finding key: ") + QString::fromStdString(err.asStdString()));
         return result;
     }
     result.keyFound = true;
@@ -208,7 +209,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
             result.resultString = QString::fromStdString(ciphertext.toString());
             return result;
         } else {
-            result.resultString.append(QString::fromUtf8("ERROR in syymetric encryption: ") + QString::fromStdString(err.asStdString()));
+            result.resultString.append(i18n("ERROR in syymetric encryption: ") + QString::fromStdString(err.asStdString()));
             return result;
         }
     }
@@ -224,7 +225,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
         result.resultString = QString::fromStdString(ciphertext.toString());
         return result;
     } else {
-        result.errorMessage.append(QString::fromUtf8("Encryption Failed: ") + QString::fromStdString(enRes.error().asStdString()));
+        result.errorMessage.append(i18n("Encryption Failed: ") + QString::fromStdString(enRes.error().asStdString()));
         return result;
     }
     return result;
