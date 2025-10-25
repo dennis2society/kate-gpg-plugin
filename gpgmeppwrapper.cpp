@@ -128,7 +128,11 @@ const GPGOperationResult GPGMeWrapper::decryptString(const QString &inputString_
     // find correct key
     const GpgME::Key key = ctx->key(fingerprint_.toUtf8().constData(), err, false);
     if (err) {
+#ifdef _WIN32 // use deprecated string conversion
+        result.errorMessage.append(i18n("Error finding key: ") + QString::fromUtf8(err.asString()));
+#else
         result.errorMessage.append(i18n("Error finding key: ") + QString::fromStdString(err.asStdString()));
+#endif
         return result;
     }
     result.keyFound = true;
@@ -156,7 +160,11 @@ const GPGOperationResult GPGMeWrapper::decryptString(const QString &inputString_
         }
 
     } else {
+#ifdef _WIN32 // use deprecated string conversion
+        result.errorMessage.append(QString::fromUtf8(d_res.error().asString()));
+#else
         result.errorMessage.append(d_res.error().asStdString());
+#endif
         return result;
     }
 
@@ -209,7 +217,11 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
             result.resultString = QString::fromStdString(ciphertext.toString());
             return result;
         } else {
-            result.resultString.append(i18n("Error in symmetric encryption: ") + QString::fromStdString(err.asStdString()));
+#ifdef _WIN32 // use deprecated string conversion
+            result.errorMessage.append(i18n("Error in symmetric encryption: ") + QString::fromUtf8(err.asString()));
+#else
+            result.errorMessage.append(i18n("Error in symmetric encryption: ") + QString::fromStdString(err.asStdString()));
+#endif
             return result;
         }
     }
@@ -225,7 +237,11 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
         result.resultString = QString::fromStdString(ciphertext.toString());
         return result;
     } else {
+#ifdef _WIN32 // use deprecated string conversion
+        result.errorMessage.append(i18n("Encryption Failed: ") + QString::fromUtf8(enRes.error().asString()));
+#else
         result.errorMessage.append(i18n("Encryption Failed: ") + QString::fromStdString(enRes.error().asStdString()));
+#endif
         return result;
     }
     return result;
