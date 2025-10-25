@@ -209,7 +209,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
             result.resultString = QString::fromStdString(ciphertext.toString());
             return result;
         } else {
-            result.resultString.append(i18n("ERROR in syymetric encryption: ") + QString::fromStdString(err.asStdString()));
+            result.resultString.append(i18n("Error in symmetric encryption: ") + QString::fromStdString(err.asStdString()));
             return result;
         }
     }

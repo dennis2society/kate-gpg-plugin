@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <KConfig>
+#include <KConfigGroup>
 #include <KTextEditor/Document>
 #include <KTextEditor/MainWindow>
 #include <KTextEditor/Plugin>
@@ -61,8 +61,8 @@ private:
     // The top level toolview widget
     std::unique_ptr<QWidget> m_toolview;
 
-    const QString m_pluginConfigName = QString::fromUtf8("kategpgplugin_config");
-    const QString m_pluginConfigGroupName = QString::fromUtf8("kategpgpluginconfiggroup");
+    // const QString m_kateConfig = QString::fromUtf8("katerc");
+    const QString m_pluginConfigGroupName = QStringLiteral("gpgplugin");
     GPGMeWrapper *m_gpgWrapper = nullptr;
 
     int m_selectedRowIndex;
@@ -88,7 +88,7 @@ private:
     QTableWidget *m_gpgKeyTable;
     QStringList m_gpgKeyTableHeader;
 
-    KConfig *m_pluginConfig;
+    KConfigGroup m_group;
 
     // private functions
     void updateKeyTable();

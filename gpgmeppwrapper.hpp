@@ -99,7 +99,7 @@ public:
      * @brief To test if a given QString is GPG encrypted already.
      * @param inputString_ The text to be tested
      * @return true if the inputString_ has sufficient indicators for being
-     *         encrypted. (Currently only one is used...)
+     *         encrypted (by testing file extension and decryption success).
      */
     bool isEncrypted(const QString &inputString_);
 

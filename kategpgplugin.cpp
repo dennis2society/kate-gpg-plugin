@@ -5,9 +5,9 @@
 
 #include <qdebug.h>
 
-#include <KConfigGroup>
 #include <KLocalizedString>
 #include <KPluginFactory>
+#include <KSharedConfig>
 #include <KTextEditor/Application>
 #include <KTextEditor/Editor>
 #include <KTextEditor/MainWindow>
@@ -29,45 +29,38 @@ QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow)
 KateGPGPluginView::~KateGPGPluginView()
 {
     savePluginConfig();
-    if (m_pluginConfig != nullptr) {
-        delete m_pluginConfig;
-    }
 }
 
 void KateGPGPluginView::readPluginConfig()
 {
-    if (m_pluginConfig != nullptr) {
-        KConfigGroup group = m_pluginConfig->group(m_pluginConfigGroupName);
-        uint comboIndex = group.readEntry("selected_mail_address_index", 0);
-        m_saveAsASCIICheckbox->setChecked(group.readEntry("use_ASCII_armor", true));
-        m_symmetricEncryptioCheckbox->setChecked(group.readEntry("use_symmetric_encryption", false));
-        m_showOnlyPrivateKeysCheckbox->setChecked(group.readEntry("show_only_private_keys", true));
-        m_hideExpiredKeysCheckbox->setChecked(group.readEntry("hide_expired_secret_keys", true));
-        m_preferredEmailLineEdit->setText(group.readEntry("search_string", ""));
-        m_selectedRowIndex = group.readEntry("selected_key_index", 0);
-        if (m_gpgKeyTable->rowCount() > 0) {
-            m_gpgKeyTable->selectRow(m_selectedRowIndex);
-        }
-        uint numpreferredEmailAddressComboBoxCount = m_preferredEmailAddressComboBox->count();
-        if (comboIndex <= numpreferredEmailAddressComboBoxCount) {
-            m_preferredEmailAddressComboBox->setCurrentIndex(group.readEntry("selected_mail_address_index", 0));
-        }
+    m_group = KConfigGroup(KSharedConfig::openConfig(), m_pluginConfigGroupName);
+
+    uint comboIndex = m_group.readEntry("selected_mail_address_index", 0);
+    m_saveAsASCIICheckbox->setChecked(m_group.readEntry("use_ASCII_armor", true));
+    m_symmetricEncryptioCheckbox->setChecked(m_group.readEntry("use_symmetric_encryption", false));
+    m_showOnlyPrivateKeysCheckbox->setChecked(m_group.readEntry("show_only_private_keys", true));
+    m_hideExpiredKeysCheckbox->setChecked(m_group.readEntry("hide_expired_secret_keys", true));
+    m_preferredEmailLineEdit->setText(m_group.readEntry("search_string", ""));
+    m_selectedRowIndex = m_group.readEntry("selected_key_index", 0);
+    if (m_gpgKeyTable->rowCount() > 0) {
+        m_gpgKeyTable->selectRow(m_selectedRowIndex);
+    }
+    uint numpreferredEmailAddressComboBoxCount = m_preferredEmailAddressComboBox->count();
+    if (comboIndex <= numpreferredEmailAddressComboBoxCount) {
+        m_preferredEmailAddressComboBox->setCurrentIndex(m_group.readEntry("selected_mail_address_index", 0));
     }
 }
 
 void KateGPGPluginView::savePluginConfig()
 {
-    if (m_pluginConfig != nullptr) {
-        KConfigGroup group = m_pluginConfig->group(m_pluginConfigGroupName);
-        group.writeEntry("search_string", m_preferredEmailLineEdit->text());
-        group.writeEntry("selected_key_index", m_selectedRowIndex);
-        group.writeEntry("selected_mail_address_index", m_preferredEmailAddressComboBox->currentIndex());
-        group.writeEntry("use_ASCII_armor", m_saveAsASCIICheckbox->isChecked());
-        group.writeEntry("use_symmetric_encryption", m_symmetricEncryptioCheckbox->isChecked());
-        group.writeEntry("show_only_private_keys", m_showOnlyPrivateKeysCheckbox->isChecked());
-        group.writeEntry("hide_expired_secret_keys", m_hideExpiredKeysCheckbox->isChecked());
-        m_pluginConfig->sync();
-    }
+    m_group.writeEntry("search_string", m_preferredEmailLineEdit->text());
+    m_group.writeEntry("selected_key_index", m_selectedRowIndex);
+    m_group.writeEntry("selected_mail_address_index", m_preferredEmailAddressComboBox->currentIndex());
+    m_group.writeEntry("use_ASCII_armor", m_saveAsASCIICheckbox->isChecked());
+    m_group.writeEntry("use_symmetric_encryption", m_symmetricEncryptioCheckbox->isChecked());
+    m_group.writeEntry("show_only_private_keys", m_showOnlyPrivateKeysCheckbox->isChecked());
+    m_group.writeEntry("hide_expired_secret_keys", m_hideExpiredKeysCheckbox->isChecked());
+    m_group.sync();
 }
 
 KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWindow *mainwindow)
@@ -84,8 +77,8 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWin
     m_toolview->setMinimumHeight(700);
 
     // BUTTONS!
-    m_gpgDecryptButton = new QPushButton(i18n("GPG DEcrypt current document"));
-    m_gpgEncryptButton = new QPushButton(i18n("GPG ENcrypt current document"));
+    m_gpgDecryptButton = new QPushButton(i18n("GPG Decrypt current document"));
+    m_gpgEncryptButton = new QPushButton(i18n("GPG Encrypt current document"));
 
     // Lots of initialization and setting parameters for Qt UI stuff
     m_verticalLayout = new QVBoxLayout(m_toolview.get());
@@ -169,7 +162,6 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWin
     updateKeyTable();
 
     // restore plugin config
-    m_pluginConfig = new KConfig(m_pluginConfigName);
     readPluginConfig();
 }
 
@@ -211,7 +203,7 @@ void KateGPGPluginView::connectToOpenAndSaveDialog(KTextEditor::Document *doc)
 
 void KateGPGPluginView::onDocumentOpened(KTextEditor::Document *doc)
 {
-    if ((doc->url().fileName().toLower().endsWith(QString::fromUtf8(".gpg")) || doc->url().fileName().toLower().endsWith(QString::fromUtf8(".asc")))
+    if ((doc->url().fileName().toLower().endsWith(QLatin1String(".gpg")) || doc->url().fileName().toLower().endsWith(QLatin1String(".asc")))
         && m_gpgWrapper->isEncrypted(doc->text())) {
         decryptButtonPressed();
     }
@@ -220,7 +212,7 @@ void KateGPGPluginView::onDocumentOpened(KTextEditor::Document *doc)
 void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc)
 {
     // Called right before save
-    if (doc->url().fileName().toLower().endsWith(QString::fromUtf8(".gpg")) || doc->url().fileName().toLower().endsWith(QString::fromUtf8(".asc"))) {
+    if (doc->url().fileName().toLower().endsWith(QLatin1String(".gpg")) || doc->url().fileName().toLower().endsWith(QLatin1String(".asc"))) {
         QList<KTextEditor::View *> views = m_mainWindow->views();
         KTextEditor::View *v = views.at(0);
         if (m_gpgWrapper->isEncrypted(v->document()->text())) {
@@ -298,7 +290,7 @@ void KateGPGPluginView::encryptButtonPressed()
         m_mainWindow->showMessage(generateMessage(i18n("Error Encrypting Text!\nNo fingerprint selected..."), i18n("Error")));
         return;
     }
-    if (v->document()->text().startsWith(QString::fromUtf8("-----BEGIN PGP MESSAGE-----"))) {
+    if (v->document()->text().startsWith(QLatin1String("-----BEGIN PGP MESSAGE-----"))) {
         m_mainWindow->showMessage(generateMessage(i18n("Attempted double encryption detected!\nEncrypting twice "
                                                        "is disabled for now..."),
                                                   i18n("Warning")));
