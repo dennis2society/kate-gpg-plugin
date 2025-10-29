@@ -128,7 +128,7 @@ const GPGOperationResult GPGMeWrapper::decryptString(const QString &inputString_
     // find correct key
     const GpgME::Key key = ctx->key(fingerprint_.toUtf8().constData(), err, false);
     if (err) {
-#ifdef _WIN32 // use deprecated string conversion
+#if GPGMEPP_VERSION_NUMBER < 12400 // use deprecated string conversion
         result.errorMessage.append(i18n("Error finding key: ") + QString::fromUtf8(err.asString()));
 #else
         result.errorMessage.append(i18n("Error finding key: ") + QString::fromStdString(err.asStdString()));
@@ -146,8 +146,6 @@ const GPGOperationResult GPGMeWrapper::decryptString(const QString &inputString_
     GpgME::Data decryptedString;
     // attempt to decrypt
     GpgME::DecryptionResult d_res = ctx->decrypt(encryptedString, decryptedString);
-// Meh... we have to distinguish GPGMe++ versions because Ubuntu ships
-// 1.2.4 instead of >=2.0.0
 #if GPGMEPP_VERSION_NUMBER < 20000
     if (!d_res.error()) {
 #else
@@ -160,7 +158,7 @@ const GPGOperationResult GPGMeWrapper::decryptString(const QString &inputString_
         }
 
     } else {
-#ifdef _WIN32 // use deprecated string conversion
+#if GPGMEPP_VERSION_NUMBER < 12400 // use deprecated string conversion
         result.errorMessage.append(QString::fromUtf8(d_res.error().asString()));
 #else
         result.errorMessage.append(d_res.error().asStdString());
@@ -217,7 +215,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
             result.resultString = QString::fromStdString(ciphertext.toString());
             return result;
         } else {
-#ifdef _WIN32 // use deprecated string conversion
+#if GPGMEPP_VERSION_NUMBER < 12400 // use deprecated string conversion
             result.errorMessage.append(i18n("Error in symmetric encryption: ") + QString::fromUtf8(err.asString()));
 #else
             result.errorMessage.append(i18n("Error in symmetric encryption: ") + QString::fromStdString(err.asStdString()));
@@ -226,8 +224,6 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
         }
     }
     GpgME::EncryptionResult enRes = ctx->encrypt(selectedKeys, plainTextData, ciphertext, flags);
-// Meh... we have to distinguish GPGMe++ versions because Ubuntu ships
-// 1.2.4 instead of >=2.0.0
 #if GPGMEPP_VERSION_NUMBER < 20000
     if (!enRes.error()) {
 #else
@@ -237,7 +233,7 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
         result.resultString = QString::fromStdString(ciphertext.toString());
         return result;
     } else {
-#ifdef _WIN32 // use deprecated string conversion
+#if GPGMEPP_VERSION_NUMBER < 12400 // use deprecated string conversion
         result.errorMessage.append(i18n("Encryption Failed: ") + QString::fromUtf8(enRes.error().asString()));
 #else
         result.errorMessage.append(i18n("Encryption Failed: ") + QString::fromStdString(enRes.error().asStdString()));
