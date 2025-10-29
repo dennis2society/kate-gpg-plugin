@@ -347,7 +347,7 @@ void KateGPGPluginView::onTableViewSelection()
 
 QString concatenateEmailAddressesToString(const QVector<QString> uids_, const QVector<QString> mailAddresses_, const QVector<QString> subkeyIDs_)
 {
-    assert(uids_.size() == mailAddresses_.size());
+    Q_ASSERT(uids_.size() == mailAddresses_.size());
     QString out = QString::fromUtf8("");
     for (auto i = 0; i < mailAddresses_.size(); ++i) {
         out += uids_.at(i) + QString::fromUtf8(" <");
