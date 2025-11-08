@@ -46,7 +46,7 @@ Update: I have taken care that this doesn't happen anymore.
 + Ctrl+s and Save/SaveAs will automatically (re-)encrypt the file (with either the same 
   key that was used for decryption or the default selection).
 + Think twice before pressing Ctrl+S!
-+ Ctrl+Z works after encryption and saving.
++ Ctrl+Z works after encryption and saving!
 
 ## Build Instructions
 
@@ -66,8 +66,8 @@ Fedora 42 VMs and had to install at least these packages manually:
   <li>libgpg-error-dev</li>
   <li>libecm1-dev</li>
   <li>qt6-base-dev (required since Ubuntu 25.04)</li>
-  <li>libkf6texteditor-dev (required since Ubuntu 25.04</li>
-  <li>qtcreator (Optional but helpful because it installs all Qt6 dev
+  <li>libkf6texteditor-dev (required since Ubuntu 25.04)</li>
+  <li>qtcreator (Optional but helpful because it installs most Qt6 dev
   dependencies)</li>
 </ul>
 
