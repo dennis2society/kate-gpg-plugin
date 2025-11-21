@@ -33,7 +33,7 @@ private:
 
     // for convenience reasons we want to know the currently selected key from the
     // UI
-    uint m_selectedKeyIndex;
+    uint m_selectedKeyIndex = 0;
 
     /**
      * @brief Gets all available GPG keys containing mail addresses
@@ -89,12 +89,12 @@ public:
      *        key is available.
      * @return The GPGOerationsResult (see above)
      */
-    const GPGOperationResult encryptString(const QString &inputString_,
-                                           const QString &fingerprint_,
-                                           const QString &recipientMail_,
-                                           const bool useASCII,
-                                           bool symmetricEncryption_ = false,
-                                           bool showOnlyPrivateKeys_ = false);
+    GPGOperationResult encryptString(const QString &inputString_,
+                                     const QString &fingerprint_,
+                                     const QString &recipientMail_,
+                                     const bool useASCII,
+                                     bool symmetricEncryption_ = false,
+                                     bool showOnlyPrivateKeys_ = false);
 
     /**
      * @brief To test if a given QString is GPG encrypted already.

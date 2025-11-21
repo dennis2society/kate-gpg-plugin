@@ -66,7 +66,7 @@ private:
     const QString m_pluginConfigGroupName = QStringLiteral("gpgplugin");
     GPGMeWrapper *m_gpgWrapper = nullptr;
 
-    int m_selectedRowIndex;
+    int m_selectedRowIndex = 0;
 
     QPushButton *m_gpgDecryptButton = nullptr;
     QPushButton *m_gpgEncryptButton = nullptr;
@@ -108,5 +108,5 @@ private:
     void onDocumentOpened(KTextEditor::Document *doc);
 
     // Function to generate translatable Kate-conform error/warning messages
-    const QVariantMap generateMessage(const QString translatebleMessage, const QString messageType);
+    QVariantMap generateMessage(const QString translatebleMessage, const QString messageType);
 };

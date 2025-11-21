@@ -93,7 +93,6 @@ void GPGMeWrapper::loadKeys(bool showOnlyPrivateKeys_, bool hideExpiredKeys_, co
         d.loadFromGPGMeKey(*key);
         m_keys.push_back(d);
     }
-    return;
 }
 
 const QVector<GPGKeyDetails> &GPGMeWrapper::getKeys() const
@@ -172,12 +171,12 @@ const GPGOperationResult GPGMeWrapper::decryptString(const QString &inputString_
     return result;
 }
 
-const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_,
-                                                     const QString &fingerprint_,
-                                                     const QString &recipientMail_,
-                                                     const bool useASCII,
-                                                     bool symmetricEncryption_,
-                                                     bool showOnlyPrivateKeys_)
+GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_,
+                                               const QString &fingerprint_,
+                                               const QString &recipientMail_,
+                                               const bool useASCII,
+                                               bool symmetricEncryption_,
+                                               bool showOnlyPrivateKeys_)
 {
     GPGOperationResult result;
 
@@ -198,8 +197,9 @@ const GPGOperationResult GPGMeWrapper::encryptString(const QString &inputString_
     GpgME::initializeLibrary();
     auto ctx = std::unique_ptr<GpgME::Context>(GpgME::Context::createForProtocol(protocol));
     ctx->setArmor(true);
-    if (useASCII)
+    if (useASCII) {
         ctx->setTextMode(true);
+    }
 
     QByteArray bar = inputString_.toUtf8();
     const qsizetype length = bar.length();
@@ -253,8 +253,9 @@ bool GPGMeWrapper::isEncrypted(const QString &inputString_)
     QByteArray outBuffer;
     GpgME::Data dataOut(outBuffer.constData(), outBuffer.size(), true);
     std::unique_ptr<GpgME::Context> ctx(GpgME::Context::createForProtocol(GpgME::OpenPGP));
-    if (!ctx)
+    if (!ctx) {
         return false;
+    }
 
     GpgME::DecryptionResult result = ctx->decrypt(dataIn, dataOut);
 
