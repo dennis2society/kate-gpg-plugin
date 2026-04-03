@@ -288,7 +288,7 @@ void KateGPGPluginView::encryptButtonPressed()
         m_mainWindow->showMessage(generateMessage(i18n("Error Encrypting Text!\nNo fingerprint selected..."), QStringLiteral("Error")));
         return;
     }
-    if (v->document()->text().startsWith(QLatin1String("-----BEGIN PGP MESSAGE-----"))) {
+    if (m_gpgWrapper->isEncrypted(v->document()->text())) {
         m_mainWindow->showMessage(generateMessage(i18n("Attempted double encryption detected! Encrypting twice "
                                                        "is disabled for now..."),
                                                   QStringLiteral("Warning")));
