@@ -332,7 +332,7 @@ void KateGPGPluginView::onTableViewSelection()
             for (auto key = m_gpgWrapper->getKeys().begin(); key != m_gpgWrapper->getKeys().end(); ++key) {
                 GPGKeyDetails keyDetail = *key;
                 if (selectedFingerPrint == keyDetail.fingerPrint()) {
-                    const QVector<QString> mailAddresses = keyDetail.mailAdresses();
+                    const QVector<QString> mailAddresses = keyDetail.mailAddresses();
                     for (auto &r : mailAddresses) {
                         m_preferredEmailAddressComboBox->addItem(r);
                     }
@@ -378,7 +378,7 @@ void KateGPGPluginView::updateKeyTable()
         makeTableCell(keyDetail.creationDate(), numRows, 1);
         makeTableCell(keyDetail.expiryDate(), numRows, 2);
         makeTableCell(keyDetail.keyLength(), numRows, 3);
-        QString uidsAndMails(concatenateEmailAddressesToString(keyDetail.uids(), keyDetail.mailAdresses(), keyDetail.subkeyIDs()));
+        QString uidsAndMails(concatenateEmailAddressesToString(keyDetail.uids(), keyDetail.mailAddresses(), keyDetail.subkeyIDs()));
         makeTableCell(uidsAndMails, numRows, 4);
         ++numRows;
     }

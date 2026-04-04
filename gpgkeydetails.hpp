@@ -28,7 +28,7 @@ public:
     QString creationDate() const;
     QString expiryDate() const;
     const QVector<QString> &uids() const; // this returns a list of all names per key
-    const QVector<QString> &mailAdresses() const; // this returns a list of all email addresses associated with this
+    const QVector<QString> &mailAddresses() const; // this returns a list of all email addresses associated with this
                                                   // key
     const QVector<QString> &subkeyIDs() const; // this returns a list of all "IDs" per key
 

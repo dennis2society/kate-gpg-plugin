@@ -107,7 +107,7 @@ uint GPGMeWrapper::getNumKeys() const
 
 bool GPGMeWrapper::isPreferredKey(const GPGKeyDetails d_, const QString &mailAddress_)
 {
-    for (auto &it : d_.mailAdresses()) {
+    for (auto &it : d_.mailAddresses()) {
         if (it.contains(mailAddress_)) {
             return true;
         }
