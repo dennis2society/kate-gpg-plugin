@@ -155,8 +155,14 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWin
     connect(m_gpgEncryptButton, SIGNAL(released()), this, SLOT(encryptButtonPressed()));
     // hook into open/save dialog
     connect(mainwindow, &KTextEditor::MainWindow::viewCreated, this, [this](KTextEditor::View *view) {
-        connectToOpenAndSaveDialog(view->document());
+        connectToOpenAndSaveDialog(view);
     });
+    // update UI state when the active tab changes
+    connect(mainwindow, &KTextEditor::MainWindow::viewChanged, this, &KateGPGPluginView::onViewChanged);
+    // initialise m_currentDocument from whatever is already open
+    if (KTextEditor::View *activeView = mainwindow->activeView()) {
+        m_currentDocument = activeView->document();
+    }
     updateKeyTable();
 
     // restore plugin config
@@ -193,45 +199,189 @@ QVariantMap KateGPGPluginView::generateMessage(const QString translatebleMessage
     return message;
 }
 
-void KateGPGPluginView::connectToOpenAndSaveDialog(KTextEditor::Document *doc)
+void KateGPGPluginView::onViewChanged(KTextEditor::View *v)
 {
-    connect(doc, &KTextEditor::Document::aboutToSave, this, &KateGPGPluginView::onDocumentWillSave);
-    onDocumentOpened(doc);
+    if (!v) {
+        m_currentDocument = nullptr;
+        return;
+    }
+
+    KTextEditor::Document *newDoc = v->document();
+
+    // Save UI state for the document we are leaving
+    if (m_currentDocument && m_currentDocument != newDoc) {
+        DocumentUIState state;
+        state.saveAsASCII = m_saveAsASCIICheckbox->isChecked();
+        state.symmetricEncryption = m_symmetricEncryptioCheckbox->isChecked();
+        state.selectedRowIndex = m_selectedRowIndex;
+        state.selectedFingerprint = m_selectedKeyIndexEdit->text();
+        state.selectedEmailAddress = m_preferredEmailAddressComboBox->currentText();
+        m_documentStates[m_currentDocument] = state;
+    }
+
+    m_currentDocument = newDoc;
+
+    // Restore UI state for the document we are switching to (if it has saved state)
+    if (m_documentStates.contains(newDoc)) {
+        const DocumentUIState &state = m_documentStates[newDoc];
+
+        m_saveAsASCIICheckbox->setChecked(state.saveAsASCII);
+        m_symmetricEncryptioCheckbox->setChecked(state.symmetricEncryption);
+        m_selectedRowIndex = state.selectedRowIndex;
+
+        // Restore key table selection by fingerprint.
+        // Block signals so onTableViewSelection is not triggered mid-restore.
+        m_gpgKeyTable->blockSignals(true);
+        for (int i = 0; i < m_gpgKeyTable->rowCount(); ++i) {
+            QTableWidgetItem *item = m_gpgKeyTable->item(i, 0);
+            if (item && item->text() == state.selectedFingerprint) {
+                m_gpgKeyTable->selectRow(i);
+                break;
+            }
+        }
+        m_gpgKeyTable->blockSignals(false);
+
+        // Repopulate the email combo for the restored key selection, then
+        // re-apply the stored email choice.
+        onTableViewSelection();
+        const int idx = m_preferredEmailAddressComboBox->findText(state.selectedEmailAddress);
+        if (idx >= 0) {
+            m_preferredEmailAddressComboBox->setCurrentIndex(idx);
+        }
+    }
 }
 
-void KateGPGPluginView::onDocumentOpened(KTextEditor::Document *doc)
+void KateGPGPluginView::connectToOpenAndSaveDialog(KTextEditor::View *view)
 {
-    if ((doc->url().fileName().toLower().endsWith(QLatin1String(".gpg")) || doc->url().fileName().toLower().endsWith(QLatin1String(".asc")))
-        && m_gpgWrapper->isEncrypted(doc->text())) {
-        decryptButtonPressed();
+    KTextEditor::Document *doc = view->document();
+    connect(doc, &KTextEditor::Document::aboutToSave, this, &KateGPGPluginView::onDocumentWillSave);
+    // Clean up stored state when the document is closed/destroyed
+    connect(doc, &QObject::destroyed, this, [this, doc]() {
+        m_documentStates.remove(doc);
+        if (m_currentDocument == doc) {
+            m_currentDocument = nullptr;
+        }
+    });
+    onDocumentOpened(view);
+}
+
+void KateGPGPluginView::onDocumentOpened(KTextEditor::View *view)
+{
+    KTextEditor::Document *doc = view->document();
+    if (!(doc->url().fileName().toLower().endsWith(QLatin1String(".gpg")) || doc->url().fileName().toLower().endsWith(QLatin1String(".asc")))
+        || !m_gpgWrapper->isEncrypted(doc->text())) {
+        return;
     }
+
+    const QString fingerprint = m_selectedKeyIndexEdit->text();
+    if (fingerprint.isEmpty()) {
+        m_mainWindow->showMessage(generateMessage(i18n("Error Decrypting Text! No fingerprint selected..."), QStringLiteral("Error")));
+        return;
+    }
+
+    GPGOperationResult res = m_gpgWrapper->decryptString(doc->text(), fingerprint);
+    if (!res.keyFound) {
+        m_mainWindow->showMessage(generateMessage(i18n("Error Decrypting Text!\n"
+                                                       "No matching fingerprint found!\n"
+                                                       "Or this is not a GPG "
+                                                       "encrypted text..."),
+                                                  QStringLiteral("Error")));
+        return;
+    }
+    if (!res.decryptionSuccess) {
+        m_mainWindow->showMessage(generateMessage(i18n("Error Decrypting Text!\n") + res.errorMessage, QStringLiteral("Error")));
+        return;
+    }
+
+    // Update only the document text — do NOT touch any UI widgets here.
+    // The per-document UI state is stored in m_documentStates so that
+    // onViewChanged can restore it cleanly once this tab becomes active,
+    // without corrupting the state of whichever tab was previously active.
+    doc->setText(res.resultString);
+
+    DocumentUIState state;
+    state.saveAsASCII = m_saveAsASCIICheckbox->isChecked();
+    state.symmetricEncryption = res.wasSymmetric;
+
+    // Find the table row that matches the key used for decryption
+    for (int i = 0; i < m_gpgKeyTable->rowCount(); ++i) {
+        QTableWidgetItem *detailsItem = m_gpgKeyTable->item(i, 4);
+        if (detailsItem && detailsItem->text().contains(res.keyIDUsedForDecryption)) {
+            state.selectedRowIndex = i;
+            QTableWidgetItem *fpItem = m_gpgKeyTable->item(i, 0);
+            if (fpItem) {
+                state.selectedFingerprint = fpItem->text();
+            }
+            break;
+        }
+    }
+
+    m_documentStates[doc] = state;
 }
 
 void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc)
 {
     // Called right before save
-    if (doc->url().fileName().toLower().endsWith(QLatin1String(".gpg")) || doc->url().fileName().toLower().endsWith(QLatin1String(".asc"))) {
-        QList<KTextEditor::View *> views = m_mainWindow->views();
-        KTextEditor::View *v = views.at(0);
-        if (m_gpgWrapper->isEncrypted(v->document()->text())) {
-            m_mainWindow->showMessage(generateMessage(i18n("Attempted double encryption detected!\nEncrypting more "
-                                                           "than once is disabled for now..."),
-                                                      QStringLiteral("Warning")));
-            return;
-        }
-        v->document()->setText(v->document()->text());
-        encryptButtonPressed();
+    if (!doc->url().fileName().toLower().endsWith(QLatin1String(".gpg")) && !doc->url().fileName().toLower().endsWith(QLatin1String(".asc"))) {
+        return;
     }
+    if (m_gpgWrapper->isEncrypted(doc->text())) {
+        m_mainWindow->showMessage(generateMessage(i18n("Attempted double encryption detected!\nEncrypting more "
+                                                       "than once is disabled for now..."),
+                                                  QStringLiteral("Warning")));
+        return;
+    }
+
+    // Retrieve the UI state for this specific document.
+    // If it is the currently active document the live widget values are used;
+    // otherwise the previously stored state is used.
+    QString fingerprint;
+    QString emailAddress;
+    bool ascii = true;
+    bool symmetric = false;
+
+    if (m_currentDocument == doc) {
+        fingerprint = m_selectedKeyIndexEdit->text();
+        emailAddress = m_preferredEmailAddressComboBox->currentText();
+        ascii = m_saveAsASCIICheckbox->isChecked();
+        symmetric = m_symmetricEncryptioCheckbox->isChecked();
+    } else if (m_documentStates.contains(doc)) {
+        const DocumentUIState &state = m_documentStates[doc];
+        fingerprint = state.selectedFingerprint;
+        emailAddress = state.selectedEmailAddress;
+        ascii = state.saveAsASCII;
+        symmetric = state.symmetricEncryption;
+    }
+
+    if (fingerprint.isEmpty() && !symmetric) {
+        m_mainWindow->showMessage(generateMessage(i18n("Error Encrypting Text!\nNo fingerprint selected..."), QStringLiteral("Error")));
+        return;
+    }
+
+    GPGOperationResult res = m_gpgWrapper->encryptString(doc->text(), fingerprint, emailAddress, ascii, symmetric);
+    if (!res.keyFound) {
+        m_mainWindow->showMessage(
+            generateMessage(i18n("Error Encrypting Text! No Matching Fingerprint found...\n") + res.errorMessage, QStringLiteral("Error")));
+        return;
+    }
+    if (!res.decryptionSuccess) {
+        m_mainWindow->showMessage(generateMessage(i18n("Error Encrypting Text!") + res.errorMessage, QStringLiteral("Error")));
+        return;
+    }
+    doc->setText(res.resultString);
 }
 
 void KateGPGPluginView::decryptButtonPressed()
 {
-    QList<KTextEditor::View *> views = m_mainWindow->views();
-    if (views.size() < 1) {
+    performDecrypt(m_mainWindow->activeView());
+}
+
+void KateGPGPluginView::performDecrypt(KTextEditor::View *v)
+{
+    if (!v) {
         m_mainWindow->showMessage(generateMessage(i18n("Error! No views available..."), QStringLiteral("Error")));
         return;
     }
-    KTextEditor::View *v = views.at(0);
     if (!v || !v->document() || v->document()->isEmpty()) {
         m_mainWindow->showMessage(generateMessage(i18n("Error Decrypting Text! Document is empty..."), QStringLiteral("Error")));
         return;
@@ -272,12 +422,11 @@ void KateGPGPluginView::decryptButtonPressed()
 
 void KateGPGPluginView::encryptButtonPressed()
 {
-    QList<KTextEditor::View *> views = m_mainWindow->views();
-    if (views.size() < 1) {
+    KTextEditor::View *v = m_mainWindow->activeView();
+    if (!v) {
         m_mainWindow->showMessage(generateMessage(i18n("Error! No views available..."), QStringLiteral("Error")));
         return;
     }
-    KTextEditor::View *v = views.at(0);
 
     if (!v || !v->document()) {
         m_mainWindow->showMessage(generateMessage(i18n("Error Encrypting Text! No document available..."), QStringLiteral("Error")));
