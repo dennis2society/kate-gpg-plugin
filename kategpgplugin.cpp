@@ -254,6 +254,9 @@ void KateGPGPluginView::decryptButtonPressed()
         return;
     }
     v->document()->setText(res.resultString);
+    // Mirror the encryption method used: check symmetric for symmetric files,
+    // uncheck it for public-key encrypted files.
+    m_symmetricEncryptioCheckbox->setChecked(res.wasSymmetric);
     // Search for decryption key ID in available keys
     // and autoselect corresponding row upon finding the correct one.
     for (auto i = 0; i < m_gpgKeyTable->rowCount(); ++i) {

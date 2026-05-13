@@ -157,6 +157,8 @@ const GPGOperationResult GPGMeWrapper::decryptString(const QString &inputString_
         for (uint i = 0; i < d_res.recipients().size(); ++i) {
             result.keyIDUsedForDecryption += QString::fromUtf8(d_res.recipients().at(i).keyID());
         }
+        // Symmetric encryption produces no public-key recipients
+        result.wasSymmetric = (d_res.numRecipients() == 0);
 
     } else {
 #if GPGMEPP_VERSION_NUMBER < 12400 // use deprecated string conversion
