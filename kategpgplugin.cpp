@@ -9,6 +9,10 @@
 #include <KTextEditor/Editor>
 #include <KTextEditor/MainWindow>
 #include <QLayout>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QDir>
+#include <QUrl>
 #include <QMessageBox>
 #include <QScrollArea>
 #include <QScrollBar>
@@ -326,9 +330,8 @@ void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc)
         return;
     }
     if (m_gpgWrapper->isEncrypted(doc->text())) {
-        m_mainWindow->showMessage(generateMessage(i18n("Attempted double encryption detected!\nEncrypting more "
-                                                       "than once is disabled for now..."),
-                                                  QStringLiteral("Warning")));
+        // Document is already encrypted (e.g. the Encrypt button was just used).
+        // Let the save proceed with the existing ciphertext — no re-encryption needed.
         return;
     }
 
@@ -447,6 +450,34 @@ void KateGPGPluginView::encryptButtonPressed()
         return;
     }
 
+    // If the file has no .gpg/.asc extension, ask the user for a target filename
+    // before doing anything — so cancelling leaves the document untouched.
+    bool needsSaveAs = false;
+    QString saveAsPath;
+    const QString docFileName = v->document()->url().fileName().toLower();
+    if (!docFileName.endsWith(QLatin1String(".gpg")) && !docFileName.endsWith(QLatin1String(".asc"))) {
+        const QString currentPath = v->document()->url().toLocalFile();
+        const QString startDir = currentPath.isEmpty() ? QDir::homePath()
+                                                       : QFileInfo(currentPath).absolutePath();
+        QString suggested = v->document()->url().fileName();
+        if (suggested.isEmpty()) {
+            suggested = QStringLiteral("untitled");
+        }
+        suggested += QStringLiteral(".gpg");
+
+        saveAsPath = QFileDialog::getSaveFileName(m_toolview.get(),
+                                                  i18n("Save Encrypted File As"),
+                                                  startDir + QDir::separator() + suggested,
+                                                  i18n("GPG Files (*.gpg *.asc)"));
+        if (saveAsPath.isEmpty()) {
+            return; // user cancelled — do not encrypt
+        }
+        if (!saveAsPath.toLower().endsWith(QLatin1String(".gpg")) && !saveAsPath.toLower().endsWith(QLatin1String(".asc"))) {
+            saveAsPath += QStringLiteral(".gpg");
+        }
+        needsSaveAs = true;
+    }
+
     GPGOperationResult res = m_gpgWrapper->encryptString(v->document()->text(),
                                                          m_selectedKeyIndexEdit->text(),
                                                          m_preferredEmailAddressComboBox->itemText(m_preferredEmailAddressComboBox->currentIndex()),
@@ -462,6 +493,11 @@ void KateGPGPluginView::encryptButtonPressed()
         return;
     }
     v->document()->setText(res.resultString);
+    if (needsSaveAs) {
+        v->document()->saveAs(QUrl::fromLocalFile(saveAsPath));
+    } else {
+        v->document()->save();
+    }
 }
 
 void KateGPGPluginView::onTableViewSelection()
