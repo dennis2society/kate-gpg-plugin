@@ -1,7 +1,7 @@
 # Kate GPG Plugin
 
-This plugin adds transparent editing of GPG encrypted text files 
-using the [GPGMe library](https://gnupg.org/software/gpgme/index.html) 
+This plugin adds transparent editing of GPG encrypted text files
+using the [GPGMe library](https://gnupg.org/software/gpgme/index.html)
 in [Kate](https://kate-editor.org).
 
 <b>This project has been submitted upstream to be part of the Kate addons!</b>
@@ -17,7 +17,7 @@ here will be pushed upstream. Fixes from the Kate repo will be added here, too.
   (asking for passphrase)
 + Upon successful decryption of a file the plugin will auto-select
   the key/fingerprint used for eventual re-encryption
-+ Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the 
++ Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the
   same key that was used to decrypt!<br />
   SaveAs auto-encrypts when selecting .gpg/.asc as file extension
 + Plugin shows all available GPG keys with basic name filtering
@@ -39,14 +39,14 @@ here will be pushed upstream. Fixes from the Kate repo will be added here, too.
 ## Caution!
 While this plugin makes it easy to decrypt+encrypt text, it also makes it easy to
 mess things up. You could accidentally encrypt a file, e.g. with a key
-that is not yours, which then you wouldn't be able to decrypt. 
+that is not yours, which then you wouldn't be able to decrypt.
 
 ~~Or you could accidentally
-save a currently decrypted file as plain text, leaving it unecrypted.~~ 
+save a currently decrypted file as plain text, leaving it unecrypted.~~
 Update: I have taken care that this doesn't happen anymore.
 
 + Use with care!
-+ Ctrl+s and Save/SaveAs will automatically (re-)encrypt the file (with either the same 
++ Ctrl+s and Save/SaveAs will automatically (re-)encrypt the file (with either the same
   key that was used for decryption or the default selection).
 + Think twice before pressing Ctrl+S!
 + Ctrl+Z works after encryption and saving!
@@ -55,7 +55,7 @@ Update: I have taken care that this doesn't happen anymore.
 
 ### Dependencies
 This plugin was developed and built on Manjaro Linux running KDE Plasma. I have
-tested the build and installation in fresh non-KDE Ubuntu 22.04.3 LTS/25.05 LTS and 
+tested the build and installation in fresh non-KDE Ubuntu 22.04.3 LTS/25.05 LTS and
 Fedora 42 VMs and had to install at least these packages manually:
 <ul>
   <li>git</li>
@@ -144,8 +144,8 @@ This line should do it for recent Ubuntu based distributions:<br />
 * Add support for subkeys
   <br />
   Partially solved. :warning:
-* --Add support for multiple GPG encrypted "Views" or "Documents" 
-  (this means handling multiple Kate tabs...)--
+* ~~Add support for multiple GPG encrypted "Views" or "Documents"
+  (this means handling multiple Kate tabs...)~~
   <br />
   Done! :white_check_mark:
 
