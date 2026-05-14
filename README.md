@@ -4,8 +4,8 @@ This plugin adds transparent editing of GPG encrypted text files
 using the [GPGMe library](https://gnupg.org/software/gpgme/index.html)
 in [Kate](https://kate-editor.org).
 
-<b>This project has been submitted upstream to be part of the Kate addons!</b>
-<br />https://invent.kde.org/utilities/kate/-/merge_requests/1904
+<b>This project has been submitted upstream and is part of the Kate addons!</b>
+<br />https://invent.kde.org/utilities/kate/-/tree/master/addons/kategpgplugin
 <br />
 This repository will still be used for further development. All changes
 here will be pushed upstream. Fixes from the Kate repo will be added here, too.
@@ -26,7 +26,7 @@ here will be pushed upstream. Fixes from the Kate repo will be added here, too.
 + Manual selection of key used for encryption (plugin settings can remain
   hidden as long as no encryption key change is necessary)
 + Symmetric encryption possible
-+ This now supports multiple decrypted documents in multiple windows, with encryption
++ This plugin now supports multiple decrypted documents in multiple windows, with encryption
   settings per tab/document
 + A status bar indicator showing if a document is currently decrypted
 
@@ -148,4 +148,4 @@ This line should do it for recent Ubuntu based distributions:<br />
   <br />
   Partially solved. :warning:
 
-&copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
+&copy; 2023 - 2026, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
