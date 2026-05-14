@@ -26,6 +26,9 @@ here will be pushed upstream. Fixes from the Kate repo will be added here, too.
 + Manual selection of key used for encryption (plugin settings can remain
   hidden as long as no encryption key change is necessary)
 + Symmetric encryption possible
++ This now supports multiple decrypted documents in multiple windows, with encryption
+  settings per tab/document
++ A status bar indicator showing if a document is currently decrypted
 
 ## Prerequisites
 + A CMake & C++ build environment is installed
@@ -141,7 +144,9 @@ This line should do it for recent Ubuntu based distributions:<br />
 * Add support for subkeys
   <br />
   Partially solved. :warning:
-* Add support for multiple GPG encrypted "Views" or "Documents" 
-  (this means handling multiple Kate tabs...)
+* --Add support for multiple GPG encrypted "Views" or "Documents" 
+  (this means handling multiple Kate tabs...)--
+  <br />
+  Done! :white_check_mark:
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
