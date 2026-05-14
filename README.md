@@ -140,13 +140,12 @@ This line should do it for recent Ubuntu based distributions:<br />
   a currently opened GPG file (to avoid saving it as unencrypted).~~
   <br />
   Done! :white_check_mark:
-* Sign and verify documents
-* Add support for subkeys
-  <br />
-  Partially solved. :warning:
 * ~~Add support for multiple GPG encrypted "Views" or "Documents"
   (this means handling multiple Kate tabs...)~~
   <br />
   Done! :white_check_mark:
+* Add support for subkeys
+  <br />
+  Partially solved. :warning:
 
 &copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
