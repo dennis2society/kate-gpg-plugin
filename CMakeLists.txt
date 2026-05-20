@@ -6,14 +6,17 @@ find_package(ECM ${KF_DEP_VERSION} QUIET REQUIRED NO_MODULE)
 
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt${QT_MAJOR_VERSION}Widgets CONFIG REQUIRED)
-find_package(Gpgmepp REQUIRED)
-
+# KDEInstallDirs must be included before any find_package() call that pulls in
+# GNUInstallDirs (e.g. find_package(Qt6 ...)), otherwise CMAKE_INSTALL_BINDIR
+# is set by GNUInstallDirs first and KDE_INSTALL_BINDIR inherits that value,
+# which produces a CMake warning.
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
-include(KDECMakeSettings)
 include(KDEClangFormat)
+
+find_package(Qt${QT_MAJOR_VERSION}Widgets CONFIG REQUIRED)
+find_package(Gpgmepp REQUIRED)
 
 
 # use C++20 like KF6 itself
