@@ -33,6 +33,16 @@ KateGPGPlugin::KateGPGPlugin(QObject *parent, const QList<QVariant> &)
     readConfig();
 }
 
+QMap<KTextEditor::Document *, DocumentUIState> &KateGPGPlugin::documentStates()
+{
+    return m_documentStates;
+}
+
+void KateGPGPlugin::notifyEncryptionStateChanged(KTextEditor::Document *doc)
+{
+    Q_EMIT documentEncryptionStateChanged(doc);
+}
+
 void KateGPGPlugin::readConfig()
 {
     m_group = KConfigGroup(KSharedConfig::openConfig(), QStringLiteral("gpgplugin"));

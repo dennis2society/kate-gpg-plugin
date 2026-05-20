@@ -56,7 +56,7 @@ target_sources(
   kategpgplugin.json
 )
 
-add_compile_options(-O3 -Wall -Wextra -Wpedantic -Wno-dev)
+add_compile_options(-O3 -Wall -Wextra -Wpedantic -Wno-dev -Wunused-includes -Wunused-parameter -Werror)
 
 # This makes the plugin translatable
 target_compile_definitions(kategpgplugin PRIVATE TRANSLATION_DOMAIN="kategpgplugin")

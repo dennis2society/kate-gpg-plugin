@@ -20,7 +20,6 @@
 #include <QObject>
 #include <QPushButton>
 #include <QTableWidget>
-#include <QTextBrowser>
 #include <QVBoxLayout>
 #include <memory>
 
@@ -79,14 +78,11 @@ public:
     // Shared per-document UI state — all windows access the same map so that
     // opening the same document in a second window reflects the correct state
     // (e.g. which key / symmetric mode was used when the file was decrypted).
-    QMap<KTextEditor::Document *, DocumentUIState> &documentStates() { return m_documentStates; }
+    QMap<KTextEditor::Document *, DocumentUIState> &documentStates();
 
     // Emit this after updating isDecrypted in the shared map so every open
     // window refreshes its encryption status indicator for the given document.
-    void notifyEncryptionStateChanged(KTextEditor::Document *doc)
-    {
-        Q_EMIT documentEncryptionStateChanged(doc);
-    }
+    void notifyEncryptionStateChanged(KTextEditor::Document *doc);
 
 Q_SIGNALS:
     void documentEncryptionStateChanged(KTextEditor::Document *doc);
