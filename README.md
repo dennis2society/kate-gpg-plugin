@@ -13,22 +13,24 @@ here will be pushed upstream. Fixes from the Kate repo will be added here, too.
 ![A screenshot of the GPG plugin settings](./kate_gpg_plugin_screenshot.jpg)
 
 ## Features
-+ Upon loading a GPG encrypted file the plugin will automatically attempt decryption
++ Upon opening a GPG encrypted file the plugin will automatically attempt decryption
   (asking for passphrase)
 + Upon successful decryption of a file the plugin will auto-select
   the key/fingerprint used for eventual re-encryption
 + Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the
   same key that was used to decrypt!<br />
-  SaveAs auto-encrypts when selecting .gpg/.asc as file extension
+  SaveAs auto-encrypts when selecting .gpg/.asc as file extension<br />
+  Encrypting manually auto-saves the document if it has was perviously decrypted
 + Plugin shows all available GPG keys with basic name filtering
   (initially auto-selects the most recently created key)
-+ Persistent settings (plugin remembers the last used settings on quit).
 + Manual selection of key used for encryption (plugin settings can remain
   hidden as long as no encryption key change is necessary)
 + Symmetric encryption possible
 + This plugin now supports multiple decrypted documents in multiple windows, with encryption
   settings per tab/document
 + A status bar indicator showing if a document is currently decrypted
++ Having the same document decrypted in two Kate windows and saving/encrypting one of them
+  automatically does the same in the other window.
 
 ## Prerequisites
 + A CMake & C++ build environment is installed
