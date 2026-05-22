@@ -20,7 +20,7 @@ here will be pushed upstream. Fixes from the Kate repo will be added here, too.
 + Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the
   same key that was used to decrypt!<br />
   SaveAs auto-encrypts when selecting .gpg/.asc as file extension<br />
-  Encrypting manually auto-saves the document if it has was perviously decrypted
+  Encrypting manually auto-saves the document if it was perviously decrypted
 + Plugin shows all available GPG keys with basic name filtering
   (initially auto-selects the most recently created key)
 + Manual selection of key used for encryption (plugin settings can remain
