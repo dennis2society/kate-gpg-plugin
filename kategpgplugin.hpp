@@ -7,7 +7,6 @@
 
 #include "gpgmeppwrapper.hpp"
 
-#include <KConfigGroup>
 #include <KTextEditor/Document>
 #include <KTextEditor/MainWindow>
 #include <KTextEditor/Plugin>
@@ -35,24 +34,6 @@ struct DocumentUIState {
     bool isDecrypted = false;
 };
 
-/**
- * Persistent settings for the plugin.
- * Global preferences (key-list filters) are applied to every window.
- * Session fields (selected key, email combo index, symmetric mode) are
- * only restored in the first window so that additional windows start
- * with independent defaults.
- */
-struct PluginConfig {
-    // Global: applied to all windows
-    bool showOnlyPrivateKeys = true;
-    bool hideExpiredKeys = true;
-    QString searchString;
-    // Session: only restored in the first window
-    int selectedKeyIndex = 0;
-    int selectedMailAddressIndex = 0;
-    bool useSymmetricEncryption = false;
-};
-
 // forward declaration
 class GPGKeyDetails;
 
@@ -63,17 +44,6 @@ public:
     explicit KateGPGPlugin(QObject *parent, const QList<QVariant> & = QList<QVariant>());
 
     QObject *createView(KTextEditor::MainWindow *mainWindow) override;
-
-    // Registers a new view and returns its initial config.
-    // The first window receives the full persisted config; subsequent
-    // windows receive only the global preferences so each window starts
-    // with an independent per-tab selection state.
-    PluginConfig registerView();
-
-    void unregisterView() { --m_viewCount; }
-
-    // Persists config to disk. Called by each view on destruction.
-    void saveConfig(const PluginConfig &config);
 
     // Shared per-document UI state — all windows access the same map so that
     // opening the same document in a second window reflects the correct state
@@ -88,11 +58,6 @@ Q_SIGNALS:
     void documentEncryptionStateChanged(KTextEditor::Document *doc);
 
 private:
-    void readConfig();
-
-    KConfigGroup m_group;
-    PluginConfig m_config;
-    int m_viewCount = 0;
     QMap<KTextEditor::Document *, DocumentUIState> m_documentStates;
 };
 

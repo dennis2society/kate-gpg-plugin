@@ -4,7 +4,6 @@
 */
 #include <KLocalizedString>
 #include <KPluginFactory>
-#include <KSharedConfig>
 #include <KTextEditor/Application>
 #include <KTextEditor/Editor>
 #include <KTextEditor/MainWindow>
@@ -30,7 +29,6 @@ K_PLUGIN_FACTORY_WITH_JSON(KateGPGPluginFactory, "kategpgplugin.json", registerP
 KateGPGPlugin::KateGPGPlugin(QObject *parent, const QList<QVariant> &)
     : KTextEditor::Plugin(parent)
 {
-    readConfig();
 }
 
 QMap<KTextEditor::Document *, DocumentUIState> &KateGPGPlugin::documentStates()
@@ -41,45 +39,6 @@ QMap<KTextEditor::Document *, DocumentUIState> &KateGPGPlugin::documentStates()
 void KateGPGPlugin::notifyEncryptionStateChanged(KTextEditor::Document *doc)
 {
     Q_EMIT documentEncryptionStateChanged(doc);
-}
-
-void KateGPGPlugin::readConfig()
-{
-    m_group = KConfigGroup(KSharedConfig::openConfig(), QStringLiteral("gpgplugin"));
-    m_config.showOnlyPrivateKeys      = m_group.readEntry("show_only_private_keys",       true);
-    m_config.hideExpiredKeys          = m_group.readEntry("hide_expired_secret_keys",      true);
-    m_config.searchString             = m_group.readEntry("search_string",                 QString());
-    m_config.selectedKeyIndex         = m_group.readEntry("selected_key_index",            0);
-    m_config.selectedMailAddressIndex = m_group.readEntry("selected_mail_address_index",   0);
-    m_config.useSymmetricEncryption   = m_group.readEntry("use_symmetric_encryption",      false);
-}
-
-PluginConfig KateGPGPlugin::registerView()
-{
-    const bool isFirst = (m_viewCount == 0);
-    ++m_viewCount;
-    if (isFirst) {
-        return m_config;
-    }
-    // Subsequent windows: share the global key-list preferences but start
-    // with clean per-tab selection state so each window is independent.
-    PluginConfig cfg;
-    cfg.showOnlyPrivateKeys = m_config.showOnlyPrivateKeys;
-    cfg.hideExpiredKeys     = m_config.hideExpiredKeys;
-    cfg.searchString        = m_config.searchString;
-    return cfg;
-}
-
-void KateGPGPlugin::saveConfig(const PluginConfig &config)
-{
-    m_config = config;
-    m_group.writeEntry("search_string",               config.searchString);
-    m_group.writeEntry("selected_key_index",          config.selectedKeyIndex);
-    m_group.writeEntry("selected_mail_address_index", config.selectedMailAddressIndex);
-    m_group.writeEntry("use_symmetric_encryption",    config.useSymmetricEncryption);
-    m_group.writeEntry("show_only_private_keys",      config.showOnlyPrivateKeys);
-    m_group.writeEntry("hide_expired_secret_keys",    config.hideExpiredKeys);
-    m_group.sync();
 }
 
 QObject *KateGPGPlugin::createView(KTextEditor::MainWindow *mainWindow)
@@ -96,25 +55,12 @@ KateGPGPluginView::~KateGPGPluginView()
         delete m_encryptionStatusLabel;
         m_encryptionStatusLabel = nullptr;
     }
-    PluginConfig cfg;
-    cfg.searchString             = m_preferredEmailLineEdit->text();
-    cfg.selectedKeyIndex         = m_selectedRowIndex;
-    cfg.selectedMailAddressIndex = m_preferredEmailAddressComboBox->currentIndex();
-    cfg.useSymmetricEncryption   = m_symmetricEncryptioCheckbox->isChecked();
-    cfg.showOnlyPrivateKeys      = m_showOnlyPrivateKeysCheckbox->isChecked();
-    cfg.hideExpiredKeys          = m_hideExpiredKeysCheckbox->isChecked();
-    m_plugin->saveConfig(cfg);
-    m_plugin->unregisterView();
 }
 
 KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWindow *mainwindow)
     : m_mainWindow(mainwindow)
     , m_plugin(plugin)
 {
-    // registerView() both increments the view counter and returns the
-    // appropriate initial config: full config for the first window,
-    // global preferences only for subsequent windows.
-    const PluginConfig cfg = plugin->registerView();
     m_gpgWrapper = new GPGMeWrapper();
     m_toolview.reset(m_mainWindow->createToolView(plugin, // pointer to plugin
                                                   QStringLiteral("gpgPlugin"), // just an identifier for the toolview
@@ -159,7 +105,7 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWin
     m_symmetricEncryptioCheckbox->setChecked(false);
 
     m_showOnlyPrivateKeysCheckbox = new QCheckBox(i18n("Show only keys for which a private key is available"));
-    m_showOnlyPrivateKeysCheckbox->setChecked(false);
+    m_showOnlyPrivateKeysCheckbox->setChecked(true);
 
     m_hideExpiredKeysCheckbox = new QCheckBox(i18n("Hide Expired Keys"));
     m_hideExpiredKeysCheckbox->setChecked(true);
@@ -228,22 +174,6 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWin
         mainWin->statusBar()->addPermanentWidget(m_encryptionStatusLabel);
     }
     updateEncryptionStatusLabel(m_currentDocument);
-
-    // Apply the config returned by registerView().
-    // Global preferences are always applied; session fields (selected key,
-    // email combo, symmetric mode) are non-zero only for the first window.
-    m_showOnlyPrivateKeysCheckbox->setChecked(cfg.showOnlyPrivateKeys);
-    m_hideExpiredKeysCheckbox->setChecked(cfg.hideExpiredKeys);
-    m_preferredEmailLineEdit->setText(cfg.searchString);
-    m_symmetricEncryptioCheckbox->setChecked(cfg.useSymmetricEncryption);
-    m_selectedRowIndex = cfg.selectedKeyIndex;
-    if (m_gpgKeyTable->rowCount() > 0) {
-        m_gpgKeyTable->selectRow(m_selectedRowIndex);
-    }
-    const uint numEntries = static_cast<uint>(m_preferredEmailAddressComboBox->count());
-    if (static_cast<uint>(cfg.selectedMailAddressIndex) < numEntries) {
-        m_preferredEmailAddressComboBox->setCurrentIndex(cfg.selectedMailAddressIndex);
-    }
 }
 
 void KateGPGPluginView::onPreferredEmailAddressChanged()
@@ -678,6 +608,7 @@ void KateGPGPluginView::makeTableCell(const QString cellValue, uint row, uint co
 
 void KateGPGPluginView::updateKeyTable()
 {
+    m_gpgWrapper->loadKeys(m_showOnlyPrivateKeysCheckbox->isChecked(), m_hideExpiredKeysCheckbox->isChecked(), m_preferredEmailLineEdit->text());
     m_gpgKeyTable->setSortingEnabled(false);
     m_gpgKeyTable->setRowCount(0);
     m_gpgKeyTableHeader << i18n("Key Fingerprint") << i18n("Creation Date") << i18n("Expiry Date") << i18n("Key Length") << i18n("User IDs");
