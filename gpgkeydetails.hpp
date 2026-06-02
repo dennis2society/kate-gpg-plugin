@@ -29,7 +29,7 @@ public:
     QString expiryDate() const;
     const QVector<QString> &uids() const; // this returns a list of all names per key
     const QVector<QString> &mailAddresses() const; // this returns a list of all email addresses associated with this
-                                                  // key
+                                                   // key
     const QVector<QString> &subkeyIDs() const; // this returns a list of all "IDs" per key
 
     size_t getNumUIds() const;

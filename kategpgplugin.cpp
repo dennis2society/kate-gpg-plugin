@@ -7,19 +7,19 @@
 #include <KTextEditor/Application>
 #include <KTextEditor/Editor>
 #include <KTextEditor/MainWindow>
-#include <QLayout>
+#include <QColor>
+#include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QDir>
-#include <QUrl>
+#include <QLayout>
+#include <QMainWindow>
 #include <QMessageBox>
+#include <QPalette>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QStatusBar>
-#include <QMainWindow>
-#include <QColor>
-#include <QPalette>
 #include <QTableWidgetItem>
+#include <QUrl>
 
 #include "gpgkeydetails.hpp"
 #include "kategpgplugin.hpp"
@@ -159,12 +159,11 @@ KateGPGPluginView::KateGPGPluginView(KateGPGPlugin *plugin, KTextEditor::MainWin
     connect(mainwindow, &KTextEditor::MainWindow::viewChanged, this, &KateGPGPluginView::onViewChanged);
     // refresh the encryption status label in this window whenever any window
     // changes a document's encryption state
-    connect(plugin, &KateGPGPlugin::documentEncryptionStateChanged,
-            this, [this](KTextEditor::Document *doc) {
-                if (doc == m_currentDocument) {
-                    updateEncryptionStatusLabel(doc);
-                }
-            });
+    connect(plugin, &KateGPGPlugin::documentEncryptionStateChanged, this, [this](KTextEditor::Document *doc) {
+        if (doc == m_currentDocument) {
+            updateEncryptionStatusLabel(doc);
+        }
+    });
     // initialise m_currentDocument from whatever is already open
     if (KTextEditor::View *activeView = mainwindow->activeView()) {
         m_currentDocument = activeView->document();
@@ -310,7 +309,8 @@ void KateGPGPluginView::connectToOpenAndSaveDialog(KTextEditor::View *view)
 void KateGPGPluginView::onDocumentOpened(KTextEditor::View *view)
 {
     KTextEditor::Document *doc = view->document();
-    if (!(doc->url().fileName().endsWith(QLatin1String(".gpg"), Qt::CaseInsensitive) || doc->url().fileName().endsWith(QLatin1String(".asc"), Qt::CaseInsensitive))
+    if (!(doc->url().fileName().endsWith(QLatin1String(".gpg"), Qt::CaseInsensitive)
+          || doc->url().fileName().endsWith(QLatin1String(".asc"), Qt::CaseInsensitive))
         || !m_gpgWrapper->isEncrypted(doc->text())) {
         return;
     }
@@ -365,7 +365,8 @@ void KateGPGPluginView::onDocumentOpened(KTextEditor::View *view)
 void KateGPGPluginView::onDocumentWillSave(KTextEditor::Document *doc)
 {
     // Called right before save
-    if (!doc->url().fileName().endsWith(QLatin1String(".gpg"), Qt::CaseInsensitive) && !doc->url().fileName().endsWith(QLatin1String(".asc"), Qt::CaseInsensitive)) {
+    if (!doc->url().fileName().endsWith(QLatin1String(".gpg"), Qt::CaseInsensitive)
+        && !doc->url().fileName().endsWith(QLatin1String(".asc"), Qt::CaseInsensitive)) {
         return;
     }
     if (m_gpgWrapper->isEncrypted(doc->text())) {
@@ -516,8 +517,7 @@ void KateGPGPluginView::encryptButtonPressed()
     const QString docFileName = v->document()->url().fileName();
     if (!docFileName.endsWith(QLatin1String(".gpg"), Qt::CaseInsensitive) && !docFileName.endsWith(QLatin1String(".asc"), Qt::CaseInsensitive)) {
         const QString currentPath = v->document()->url().toLocalFile();
-        const QString startDir = currentPath.isEmpty() ? QDir::homePath()
-                                                       : QFileInfo(currentPath).absolutePath();
+        const QString startDir = currentPath.isEmpty() ? QDir::homePath() : QFileInfo(currentPath).absolutePath();
         QString suggested = v->document()->url().fileName();
         if (suggested.isEmpty()) {
             suggested = QStringLiteral("untitled");
