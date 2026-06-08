@@ -1,11 +1,11 @@
 # Kate GPG Plugin
 
-This plugin adds transparent editing of GPG encrypted text files 
-using the [GPGMe library](https://gnupg.org/software/gpgme/index.html) 
+This plugin adds transparent editing of GPG encrypted text files
+using the [GPGMe library](https://gnupg.org/software/gpgme/index.html)
 in [Kate](https://kate-editor.org).
 
-<b>This project has been submitted upstream to be part of the Kate addons!</b>
-<br />https://invent.kde.org/utilities/kate/-/merge_requests/1904
+<b>This project has been submitted upstream and is part of the Kate addons!</b>
+<br />https://invent.kde.org/utilities/kate/-/tree/master/addons/kategpgplugin
 <br />
 This repository will still be used for further development. All changes
 here will be pushed upstream. Fixes from the Kate repo will be added here, too.
@@ -13,19 +13,24 @@ here will be pushed upstream. Fixes from the Kate repo will be added here, too.
 ![A screenshot of the GPG plugin settings](./kate_gpg_plugin_screenshot.jpg)
 
 ## Features
-+ Upon loading a GPG encrypted file the plugin will automatically attempt decryption
++ Upon opening a GPG encrypted file the plugin will automatically attempt decryption
   (asking for passphrase)
 + Upon successful decryption of a file the plugin will auto-select
   the key/fingerprint used for eventual re-encryption
-+ Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the 
++ Saving (Ctrl+s) a decrypted file will automatically re-encrypt using the
   same key that was used to decrypt!<br />
-  SaveAs auto-encrypts when selecting .gpg/.asc as file extension
+  SaveAs auto-encrypts when selecting .gpg/.asc as file extension<br />
+  Encrypting manually auto-saves the document if it was perviously decrypted
 + Plugin shows all available GPG keys with basic name filtering
   (initially auto-selects the most recently created key)
-+ Persistent settings (plugin remembers the last used settings on quit).
 + Manual selection of key used for encryption (plugin settings can remain
   hidden as long as no encryption key change is necessary)
 + Symmetric encryption possible
++ This plugin now supports multiple decrypted documents in multiple windows, with encryption
+  settings per tab/document
++ A status bar indicator showing if a document is currently decrypted
++ Having the same document decrypted in two Kate windows and saving/encrypting one of them
+  automatically does the same in the other window.
 
 ## Prerequisites
 + A CMake & C++ build environment is installed
@@ -36,14 +41,14 @@ here will be pushed upstream. Fixes from the Kate repo will be added here, too.
 ## Caution!
 While this plugin makes it easy to decrypt+encrypt text, it also makes it easy to
 mess things up. You could accidentally encrypt a file, e.g. with a key
-that is not yours, which then you wouldn't be able to decrypt. 
+that is not yours, which then you wouldn't be able to decrypt.
 
 ~~Or you could accidentally
-save a currently decrypted file as plain text, leaving it unecrypted.~~ 
+save a currently decrypted file as plain text, leaving it unecrypted.~~
 Update: I have taken care that this doesn't happen anymore.
 
 + Use with care!
-+ Ctrl+s and Save/SaveAs will automatically (re-)encrypt the file (with either the same 
++ Ctrl+s and Save/SaveAs will automatically (re-)encrypt the file (with either the same
   key that was used for decryption or the default selection).
 + Think twice before pressing Ctrl+S!
 + Ctrl+Z works after encryption and saving!
@@ -52,7 +57,7 @@ Update: I have taken care that this doesn't happen anymore.
 
 ### Dependencies
 This plugin was developed and built on Manjaro Linux running KDE Plasma. I have
-tested the build and installation in fresh non-KDE Ubuntu 22.04.3 LTS/25.05 LTS and 
+tested the build and installation in fresh non-KDE Ubuntu 22.04.3 LTS/25.05 LTS and
 Fedora 42 VMs and had to install at least these packages manually:
 <ul>
   <li>git</li>
@@ -80,9 +85,12 @@ This line should do it for recent Ubuntu based distributions:<br />
   <li>Run CMake in the cloned folder:</li>
   <ul>
     <li>
-      This works for me with Qt6: (optional Qt5 build with specified QT_MAJOR_VERSION)
+      This line generates the default Qt6 build:
       <br />
-      <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release -D QT_MAJOR_VERSION=6</code> (or 5)
+      <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release</code>
+    </li>
+    <li>To enforce Qt5 build append this to the cmake line:
+      <code>-D QT_MAJOR_VERSION=6</code>
     </li>
   </ul>
   <ul>
@@ -137,11 +145,12 @@ This line should do it for recent Ubuntu based distributions:<br />
   a currently opened GPG file (to avoid saving it as unencrypted).~~
   <br />
   Done! :white_check_mark:
-* Sign and verify documents
+* ~~Add support for multiple GPG encrypted "Views" or "Documents"
+  (this means handling multiple Kate tabs...)~~
+  <br />
+  Done! :white_check_mark:
 * Add support for subkeys
   <br />
   Partially solved. :warning:
-* Add support for multiple GPG encrypted "Views" or "Documents" 
-  (this means handling multiple Kate tabs...)
 
-&copy; 2023, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de
+&copy; 2023 - 2026, Dennis Lübke, kate-gpg-plugin (at) dennis2society.de

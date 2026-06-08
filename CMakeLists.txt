@@ -1,19 +1,27 @@
 cmake_minimum_required(VERSION 3.16)
 project(kategpgplugin VERSION 1.0)
 
+# Default to Qt6
+if(NOT QT_MAJOR_VERSION)
+    set(QT_MAJOR_VERSION 6)
+endif()
+
 set(KF_DEP_VERSION "${QT_MAJOR_VERSION}")
 find_package(ECM ${KF_DEP_VERSION} QUIET REQUIRED NO_MODULE)
 
 list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt${QT_MAJOR_VERSION}Widgets CONFIG REQUIRED)
-find_package(Gpgmepp REQUIRED)
-
+# KDEInstallDirs must be included before any find_package() call that pulls in
+# GNUInstallDirs (e.g. find_package(Qt6 ...)), otherwise CMAKE_INSTALL_BINDIR
+# is set by GNUInstallDirs first and KDE_INSTALL_BINDIR inherits that value,
+# which produces a CMake warning.
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
-include(KDECMakeSettings)
 include(KDEClangFormat)
+
+find_package(Qt${QT_MAJOR_VERSION}Widgets CONFIG REQUIRED)
+find_package(Gpgmepp REQUIRED)
 
 
 # use C++20 like KF6 itself
@@ -53,7 +61,7 @@ target_sources(
   kategpgplugin.json
 )
 
-add_compile_options(-O3 -Wall -Wextra -Wpedantic -Wno-dev)
+add_compile_options(-O3 -Wall -Wextra -Wpedantic -Wno-dev -Wunused-includes -Wunused-parameter -Werror)
 
 # This makes the plugin translatable
 target_compile_definitions(kategpgplugin PRIVATE TRANSLATION_DOMAIN="kategpgplugin")
