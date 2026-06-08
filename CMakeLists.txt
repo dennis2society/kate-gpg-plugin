@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 project(kategpgplugin VERSION 1.0)
 
+# Default to Qt6
+if(NOT QT_MAJOR_VERSION)
+    set(QT_MAJOR_VERSION 6)
+endif()
+
 set(KF_DEP_VERSION "${QT_MAJOR_VERSION}")
 find_package(ECM ${KF_DEP_VERSION} QUIET REQUIRED NO_MODULE)
 

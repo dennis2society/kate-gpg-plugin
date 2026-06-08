@@ -85,9 +85,12 @@ This line should do it for recent Ubuntu based distributions:<br />
   <li>Run CMake in the cloned folder:</li>
   <ul>
     <li>
-      This works for me with Qt6: (optional Qt5 build with specified QT_MAJOR_VERSION)
+      This line generates the default Qt6 build:
       <br />
-      <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release -D QT_MAJOR_VERSION=6</code> (or 5)
+      <code>cmake -B build/ -D CMAKE_BUILD_TYPE=Release</code>
+    </li>
+    <li>To enforce Qt5 build append this to the cmake line:
+      <code>-D QT_MAJOR_VERSION=6</code>
     </li>
   </ul>
   <ul>
